@@ -9,6 +9,7 @@ services:
       - "8000:8000"
     volumes:
       - ./backend:/var/www/html
+      - /var/www/html/vendor  # Ensure vendor isn't overwritten
       - ./data:/home/data
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000"]

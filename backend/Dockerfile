@@ -55,6 +55,13 @@ RUN composer install --no-scripts --no-autoloader
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache && \
     chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
+# Copy the entrypoint script
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# Set the entrypoint script
+ENTRYPOINT ["sh", "/usr/local/bin/entrypoint.sh"]
+
 # Expose the default Laravel port
 EXPOSE 8000
 
