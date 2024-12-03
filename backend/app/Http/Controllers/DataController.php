@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Log;
 class DataController extends Controller
 {
     private $baseDir = '/home/data/balance/yahoo/data';
+    private $priceDir = '/home/data/balance/yahoo/price';
 
     public function getMainFolders()
     {
@@ -55,21 +56,35 @@ class DataController extends Controller
         return response()->json($uniqueModels);
     }
 
+
     public function getUniqueStopLossValues()
     {
-        $stopLossRegex = '/stoploss_([\d.]+)/';
-        $uniqueStopLossValues = collect(File::directories($this->baseDir))
-            ->flatMap(function ($folder) use ($stopLossRegex) {
-                return collect(File::directories($folder))->map(function ($subfolder) use ($stopLossRegex) {
-                    if (preg_match($stopLossRegex, basename($subfolder), $matches)) {
-                        return $matches[1];
-                    }
-                    return null;
-                });
-            })
-            ->filter()
-            ->unique()
-            ->values();
+        $stopLossRegex = '/sl_([\d.]+)/';
+
+        // Recursive function for traversing directories
+        $traverseDirectories = function ($path) use (&$traverseDirectories, $stopLossRegex) {
+            $directories = File::directories($path); // Get immediate subdirectories
+            $stopLossValues = collect();
+
+            foreach ($directories as $directory) {
+                $folderName = basename($directory);
+
+                // Check if the folder name matches the stop-loss pattern
+                if (preg_match($stopLossRegex, $folderName, $matches)) {
+                    $stopLossValues->push($matches[1]); // Add matched value to the collection
+                }
+
+                // Recurse into the subdirectory to find deeper matches
+                $stopLossValues = $stopLossValues->merge($traverseDirectories($directory));
+            }
+
+            return $stopLossValues;
+        };
+
+        // Start recursive traversal from the base directory
+        $uniqueStopLossValues = $traverseDirectories($this->baseDir)
+            ->unique() // Ensure values are unique
+            ->values(); // Re-index collection
 
         return response()->json($uniqueStopLossValues);
     }
@@ -93,7 +108,7 @@ class DataController extends Controller
 
             foreach ($models as $model) {
                 foreach ($stopLosses as $stopLoss) {
-                    $subfolder = "{$model}_stoploss_$stopLoss";
+                    $subfolder = "{$model}/sl_$stopLoss";
                     $csvPath = "$folderPath/$subfolder/$dataFile";
 
                     if (File::exists($csvPath)) {
@@ -134,17 +149,14 @@ class DataController extends Controller
         $folders = $request->input('folders', []);
         $dataFile = $request->input('dataFile', "");
 
-        $baseDir = $this->baseDir;
+        $priceDir = $this->priceDir;
+
         $result = [];
 
         foreach ($folders as $folder) {
-            $folderPath = "$baseDir/$folder";
-            if (!File::isDirectory($folderPath)) {
-                Log::warning("Folder not found: $folderPath");
-                continue;
-            }
 
-            $csvPath = "$folderPath/model_TOP50_0_stoploss_0.1/$dataFile";
+
+            $csvPath = "$priceDir/$folder.csv";
 
             if (File::exists($csvPath)) {
                 $csvData = File::get($csvPath);
