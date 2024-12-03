@@ -2,12 +2,16 @@ import React, { useState, useEffect } from 'react';
 import SelectField from './SelectField';
 import Chart from 'react-apexcharts';
 import axios from 'axios';
+import {useLocation} from "react-router-dom";
+import FolderPriceGraphs from "./FolderPriceGraphs";
+import API_BASE_URL from "./config";
 
-const ChartContainer = () => {
+const ChartContainer = ({ dataFile}) => {
     const [folders, setFolders] = useState([]);
     const [models, setModels] = useState([]);
     const [stopLosses, setStopLosses] = useState([]);
     const [series, setSeries] = useState([]);
+    const location = useLocation(); // Get the current location
 
     useEffect(() => {
         if (folders.length === 0 || models.length === 0 || stopLosses.length === 0) {
@@ -15,52 +19,16 @@ const ChartContainer = () => {
         } else {
             fetchData();
         }
-    }, [folders, models, stopLosses]);
+    }, [folders, models, stopLosses, location]);
 
-    // const fetchData = async () => {
-    //     const newSeries = [];
-    //
-    //     for (let folder of folders) {
-    //         for (let model of models) {
-    //             for (let stopLoss of stopLosses) {
-    //                 const subfolder = `${model}_stoploss_${stopLoss}`;
-    //                 try {
-    //                     const response = await axios.get(`http://localhost:8080/api/csv`, {
-    //                         params: { folder, subfolder }
-    //                     });
-    //
-    //                     const csvData = response.data;
-    //                     console.log(`Data for ${folder}/${subfolder}:`, csvData);
-    //
-    //                     const data = csvData
-    //                         .filter(row => row.date && row.gain)
-    //                         .map(row => ({
-    //                             x: row.date.replace(/-/g, '/'),
-    //                             y: parseFloat(row.gain)
-    //                         }));
-    //
-    //                     if (data.length > 0) {
-    //                         newSeries.push({
-    //                             name: `${folder} | ${model} | ${stopLoss}`,
-    //                             data
-    //                         });
-    //                     }
-    //                 } catch (error) {
-    //                     console.error(`Failed to fetch data for ${folder}/${subfolder}`, error);
-    //                 }
-    //             }
-    //         }
-    //     }
-    //
-    //     setSeries(newSeries);
-    // };
 
     const fetchData = async () => {
         try {
-            const response = await axios.post('http://localhost:8080/api/combinedCsv', {
+            const response = await axios.post(API_BASE_URL + '/combinedCsv', {
                 folders,
                 models,
-                stopLosses
+                stopLosses,
+                dataFile
             });
 
             const combinedData = response.data;
@@ -108,7 +76,7 @@ const ChartContainer = () => {
             }
         },
         title: {
-            text: 'Gain over Time by Folder, Model, and Stop-Loss',
+            text: dataFile,
             align: 'center'
         },
         legend: {
@@ -131,26 +99,28 @@ const ChartContainer = () => {
                     type="line"
                     height={600}
                 />
-            </div>
+
+                <FolderPriceGraphs folders={folders} dataFile={dataFile} /> <br/> <br/>
+            </div> <br/> <br/>
 
             {/* Select Fields */}
             <div style={{ display: 'flex', flex: 1, flexDirection: 'column', minWidth: '200px', gap: '40px', padding: '120px 20px' }}>
 
                 <SelectField
                     label="Folder"
-                    endpoint="http://localhost:8080/api/mainFolders"
+                    endpoint={API_BASE_URL + "/mainFolders"}
                     value={folders}
                     onChange={setFolders}
                 />
                 <SelectField
                     label="Model"
-                    endpoint="http://localhost:8080/api/models"
+                    endpoint={API_BASE_URL + "/models"}
                     value={models}
                     onChange={setModels}
                 />
                 <SelectField
                     label="Stop Loss"
-                    endpoint="http://localhost:8080/api/stoploss"
+                    endpoint={API_BASE_URL + "/stoploss"}
                     value={stopLosses}
                     onChange={setStopLosses}
                 />

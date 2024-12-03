@@ -8,4 +8,4 @@ Route::get('/folders', [DataController::class, 'getFolders']);
 Route::get('/models', [DataController::class, 'getUniqueModels']);
 Route::get('/stoploss', [DataController::class, 'getUniqueStopLossValues']);
 Route::post('/combinedCsv', [DataController::class, 'getCombinedCsvData']);
-
+Route::post('/folderPriceData', [DataController::class, 'getFolderPriceData']);

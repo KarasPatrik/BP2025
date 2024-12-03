@@ -79,6 +79,7 @@ class DataController extends Controller
         $folders = $request->input('folders', []);
         $models = $request->input('models', []);
         $stopLosses = $request->input('stopLosses', []);
+        $dataFile = $request->input('dataFile', "");
 
         $baseDir = $this->baseDir;
         $result = [];
@@ -93,7 +94,7 @@ class DataController extends Controller
             foreach ($models as $model) {
                 foreach ($stopLosses as $stopLoss) {
                     $subfolder = "{$model}_stoploss_$stopLoss";
-                    $csvPath = "$folderPath/$subfolder/balance.csv";
+                    $csvPath = "$folderPath/$subfolder/$dataFile";
 
                     if (File::exists($csvPath)) {
                         $csvData = File::get($csvPath);
@@ -127,4 +128,68 @@ class DataController extends Controller
 
         return response()->json($result);
     }
+
+    public function getFolderPriceData(Request $request)
+    {
+        $folders = $request->input('folders', []);
+        $dataFile = $request->input('dataFile', "");
+
+        $baseDir = $this->baseDir;
+        $result = [];
+
+        foreach ($folders as $folder) {
+            $folderPath = "$baseDir/$folder";
+            if (!File::isDirectory($folderPath)) {
+                Log::warning("Folder not found: $folderPath");
+                continue;
+            }
+
+            $csvPath = "$folderPath/model_TOP50_0_stoploss_0.1/$dataFile";
+
+            if (File::exists($csvPath)) {
+                $csvData = File::get($csvPath);
+                $csvData = preg_replace('/\r\n?/', "\n", $csvData);  // Convert Windows/Mac line endings to Unix
+                $csvData = preg_replace('/\xEF\xBB\xBF/', '', $csvData); // Remove BOM if present
+                $csvData = trim($csvData); // Ensure no leading/trailing whitespace
+                $rows = array_map('str_getcsv', explode("\n", $csvData));
+                $header = array_shift($rows);
+
+                if (!$header || !in_array('date', $header) || !in_array('price', $header)) {
+                    Log::warning("CSV header is missing required columns: $csvPath");
+                    continue;
+                }
+
+                $filteredData = array_map(function ($row) use ($header) {
+                    $row = array_combine($header, $row);
+                    return [
+                        'date' => $row['date'] ?? null,
+                        'price' => $row['price'] ?? null,
+                    ];
+                }, $rows);
+
+                $filteredData = array_filter($filteredData, function ($row) {
+                    return $row['date'] && $row['price'];
+                });
+
+                if (count($filteredData) > 0) {
+                    $firstPrice = (float) $filteredData[array_key_first($filteredData)]['price'];
+
+                    // Calculate percentage change
+                    $processedData = array_map(function ($row) use ($firstPrice) {
+                        return [
+                            'date' => $row['date'],
+                            'price' => (float) $row['price'],
+                            'price_change' => (($row['price'] - $firstPrice) / $firstPrice) * 100,
+                        ];
+                    }, $filteredData);
+
+                    $result[$folder] = $processedData;
+                }
+            }
+        }
+
+        return response()->json($result);
+    }
+
+
 }
