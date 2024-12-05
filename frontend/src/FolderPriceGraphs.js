@@ -4,22 +4,25 @@ import axios from 'axios';
 import {yellow} from "@mui/material/colors";
 import API_BASE_URL from "./config";
 
-const FolderPriceGraphs = ({ folders, dataFile }) => {
+const FolderPriceGraphs = ({ experiments, folders, dataFile }) => {
     const [folderGraphs, setFolderGraphs] = useState([]);
+    const [experimentGraphs, setExperimentGraphs] = useState([]);
 
     useEffect(() => {
-        if (folders.length > 0) {
+        if (folders.length > 0 && experiments.length>0) {
             fetchFolderPriceData();
         } else {
             setFolderGraphs([]); // Reset if no folders are selected
+            setExperimentGraphs([]);
         }
-    }, [folders]);
+    }, [experiments, folders]);
 
     const fetchFolderPriceData = async () => {
         try {
             const response = await axios.post(API_BASE_URL + '/folderPriceData', {
                 folders,
                 dataFile,
+                experiments
             });
 
             const folderData = response.data;

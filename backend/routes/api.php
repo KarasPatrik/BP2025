@@ -3,6 +3,7 @@
 use App\Http\Controllers\DataController;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/experiments', [DataController::class, 'getExperimentsFolders']);
 Route::get('/mainFolders', [DataController::class, 'getMainFolders']);
 Route::get('/folders', [DataController::class, 'getFolders']);
 Route::get('/models', [DataController::class, 'getUniqueModels']);

@@ -10,11 +10,30 @@ use Illuminate\Support\Facades\Log;
 class DataController extends Controller
 {
     private $baseDir = '/home/data/balance/yahoo/data';
-    private $priceDir = '/home/data/balance/yahoo/price';
+    private $priceDir = 'price';
+    private $dataDir = 'data';
+    private $expDir = '/home/data/balance';
 
-    public function getMainFolders()
+    public function getExperimentsFolders()
     {
-        $folders = collect(File::directories($this->baseDir))->map(function ($folder) {
+        $folders = collect(File::directories($this->expDir))->map(function ($folder) {
+            return basename($folder);
+        });
+
+        return response()->json($folders);
+    }
+
+
+    public function getMainFolders(Request $request)
+    {
+        $experiment = $request->input('experiment', "");
+        if ($experiment==""){
+            return response()->json([]);
+        }
+
+        $dir = $this->expDir."/".$experiment."/". $this->dataDir;
+
+        $folders = collect(File::directories($dir))->map(function ($folder) {
             return basename($folder);
         });
 
@@ -37,10 +56,17 @@ class DataController extends Controller
         return response()->json($folders);
     }
 
-    public function getUniqueModels()
+    public function getUniqueModels(Request $request)
     {
+        $experiment = $request->input('experiment', "");
+        if ($experiment==""){
+            return response()->json([]);
+        }
+
+        $dir = $this->expDir."/".$experiment."/". $this->dataDir;
+
         $modelRegex = '/(model_[^_]+_[^_]+)/';
-        $uniqueModels = collect(File::directories($this->baseDir))
+        $uniqueModels = collect(File::directories($dir))
             ->flatMap(function ($folder) use ($modelRegex) {
                 return collect(File::directories($folder))->map(function ($subfolder) use ($modelRegex) {
                     if (preg_match($modelRegex, basename($subfolder), $matches)) {
@@ -57,8 +83,15 @@ class DataController extends Controller
     }
 
 
-    public function getUniqueStopLossValues()
+    public function getUniqueStopLossValues(Request $request)
     {
+        $experiment = $request->input('experiment', "");
+        if ($experiment==""){
+            return response()->json([]);
+        }
+
+        $dir = $this->expDir."/".$experiment."/". $this->dataDir;
+
         $stopLossRegex = '/sl_([\d.]+)/';
 
         // Recursive function for traversing directories
@@ -82,7 +115,7 @@ class DataController extends Controller
         };
 
         // Start recursive traversal from the base directory
-        $uniqueStopLossValues = $traverseDirectories($this->baseDir)
+        $uniqueStopLossValues = $traverseDirectories($dir)
             ->unique() // Ensure values are unique
             ->values(); // Re-index collection
 
@@ -96,7 +129,10 @@ class DataController extends Controller
         $stopLosses = $request->input('stopLosses', []);
         $dataFile = $request->input('dataFile', "");
 
-        $baseDir = $this->baseDir;
+        $experiments = $request->input('experiments', []);
+        $experiment = $experiments[0];
+        $baseDir = $this->expDir."/".$experiment."/". $this->dataDir;
+
         $result = [];
 
         foreach ($folders as $folder) {
@@ -147,9 +183,11 @@ class DataController extends Controller
     public function getFolderPriceData(Request $request)
     {
         $folders = $request->input('folders', []);
-        $dataFile = $request->input('dataFile', "");
 
-        $priceDir = $this->priceDir;
+        $dataFile = $request->input('dataFile', "");
+        $experiments = $request->input('experiments', []);
+        $experiment = $experiments[0];
+        $priceDir = $this->expDir."/".$experiment."/". $this->priceDir;
 
         $result = [];
 
