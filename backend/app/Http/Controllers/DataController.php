@@ -9,10 +9,9 @@ use Illuminate\Support\Facades\Log;
 
 class DataController extends Controller
 {
-    private $baseDir = '/home/data/balance/yahoo/data';
     private $priceDir = 'price';
-    private $dataDir = 'data';
-    private $expDir = '/home/data/balance';
+    private $dataDir = 'metadata';
+    private $expDir = '/home/data';
 
     public function getExperimentsFolders()
     {
