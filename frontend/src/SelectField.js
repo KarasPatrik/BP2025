@@ -10,30 +10,36 @@ import {
     TextField,
 } from '@mui/material';
 
-const SelectField = ({ label, endpoint, value, onChange }) => {
+const SelectField = ({ label, endpoint, value, onChange, isMulti, dependentData = null }) => {
     const [options, setOptions] = useState([]);
     const [filteredOptions, setFilteredOptions] = useState([]);
-    const [selectedValues, setSelectedValues] = useState([]);
-    const [searchTerm, setSearchTerm] = useState(''); // Search term for filtering
+    const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
         const fetchOptions = async () => {
             try {
-                const response = await axios.get(endpoint);
+                if (dependentData && Object.values(dependentData).some((v) => !v || v.length === 0)) {
+                    setOptions([]);
+                    setFilteredOptions([]);
+                    return;
+                }
+
+                const response = await axios.post(endpoint, dependentData || {});
                 const data = response.data;
 
                 const items = data.map((item) => ({ value: item, label: item }));
                 setOptions(items);
-                setFilteredOptions(items); // Initialize filtered options
+                setFilteredOptions(items);
             } catch (error) {
                 console.error(`Error fetching options for ${label}:`, error);
             }
         };
 
-        fetchOptions();
-    }, [endpoint, label]);
+        if (endpoint) {
+            fetchOptions();
+        }
+    }, [endpoint, dependentData, label]);
 
-    // Filter options based on the search term
     useEffect(() => {
         const filtered = options.filter((option) =>
             option.label.toLowerCase().includes(searchTerm.toLowerCase())
@@ -44,17 +50,18 @@ const SelectField = ({ label, endpoint, value, onChange }) => {
     const handleChange = (event) => {
         const { value } = event.target;
 
-        if (value.includes('Select All')) {
-            if (selectedValues.length === options.length) {
-                setSelectedValues([]);
-                onChange([]);
+        if (isMulti) {
+            if (value.includes('Select All')) {
+                if (value.length === options.length + 1) {
+                    onChange([]);
+                } else {
+                    const allOptionValues = options.map((option) => option.value);
+                    onChange(allOptionValues);
+                }
             } else {
-                const allOptionValues = options.map((option) => option.value);
-                setSelectedValues(allOptionValues);
-                onChange(allOptionValues);
+                onChange(value);
             }
         } else {
-            setSelectedValues(value);
             onChange(value);
         }
     };
@@ -67,13 +74,15 @@ const SelectField = ({ label, endpoint, value, onChange }) => {
         <FormControl fullWidth>
             <InputLabel>{label}</InputLabel>
             <Select
-                multiple
-                value={selectedValues}
+                multiple={isMulti}
+                value={value}
                 onChange={handleChange}
                 renderValue={(selected) =>
-                    selected.length === options.length
-                        ? 'All Selected'
-                        : selected.join(', ')
+                    isMulti
+                        ? selected.length === options.length
+                            ? 'All Selected'
+                            : selected.join(', ')
+                        : selected
                 }
                 MenuProps={{
                     PaperProps: {
@@ -84,37 +93,39 @@ const SelectField = ({ label, endpoint, value, onChange }) => {
                     },
                 }}
                 onKeyDown={(e) => {
-                    // Prevent Select component's default keyboard navigation
                     if (e.key !== 'Tab') {
                         e.stopPropagation();
                     }
                 }}
             >
-                {/* Search bar */}
-                <MenuItem disabled style={{ pointerEvents: 'auto' }}>
-                    <TextField
-                        fullWidth
-                        placeholder="Search..."
-                        value={searchTerm}
-                        onChange={handleSearchChange}
-                        size="small"
-                        onKeyDown={(e) => {
-                            // Ensure TextField receives the input properly
-                            e.stopPropagation();
-                        }}
-                    />
-                </MenuItem>
+                {/* Search bar for multiselects */}
+                {isMulti && (
+                    <MenuItem disabled style={{ pointerEvents: 'auto' }}>
+                        <TextField
+                            fullWidth
+                            placeholder="Search..."
+                            value={searchTerm}
+                            onChange={handleSearchChange}
+                            size="small"
+                            onKeyDown={(e) => {
+                                e.stopPropagation();
+                            }}
+                        />
+                    </MenuItem>
+                )}
 
-                {/* "Select All" Option */}
-                <MenuItem value="Select All">
-                    <Checkbox checked={selectedValues.length === options.length} />
-                    <ListItemText primary="Select All" />
-                </MenuItem>
+                {/* "Select All" Option for multiselects */}
+                {isMulti && (
+                    <MenuItem value="Select All">
+                        <Checkbox checked={value.length === options.length} />
+                        <ListItemText primary="Select All" />
+                    </MenuItem>
+                )}
 
                 {/* Render filtered options */}
                 {filteredOptions.map((option) => (
                     <MenuItem key={option.value} value={option.value}>
-                        <Checkbox checked={selectedValues.includes(option.value)} />
+                        {isMulti && <Checkbox checked={value.includes(option.value)} />}
                         <ListItemText primary={option.label} />
                     </MenuItem>
                 ))}
@@ -124,3 +135,4 @@ const SelectField = ({ label, endpoint, value, onChange }) => {
 };
 
 export default SelectField;
+

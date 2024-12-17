@@ -1,60 +1,58 @@
 import React, { useState, useEffect } from 'react';
 import Chart from 'react-apexcharts';
-import axios from 'axios';
-import {yellow} from "@mui/material/colors";
 import API_BASE_URL from "./config";
+import axios from 'axios';
 
-const FolderPriceGraphs = ({ folders, dataFile }) => {
-    const [folderGraphs, setFolderGraphs] = useState([]);
+const FolderPriceGraphs = ({ stocks, experiment }) => {
+    const [stockGraphData, setStockGraphData] = useState([]);
 
     useEffect(() => {
-        if (folders.length > 0) {
-            fetchFolderPriceData();
+        if (experiment && stocks.length > 0) {
+            fetchStockPriceData();
         } else {
-            setFolderGraphs([]); // Reset if no folders are selected
+            setStockGraphData([]);
         }
-    }, [folders]);
+    }, [stocks, experiment]);
 
-    const fetchFolderPriceData = async () => {
+    const fetchStockPriceData = async () => {
         try {
-            const response = await axios.post(API_BASE_URL + '/folderPriceData', {
-                folders,
-                dataFile,
+            const response = await axios.post(API_BASE_URL + '/stockPrices', {
+                experiment,
+                stocks,
             });
 
-            const folderData = response.data;
+            const stockData = response.data;
 
-            // Process folder-specific price graphs
-            const newFolderGraphs = Object.keys(folderData).map((folder) => {
-                const folderPrices = folderData[folder] || [];
-                if (folderPrices.length > 0) {
-                    const firstValue = parseFloat(folderPrices[0].price);
+            // Process and combine stock data for the chart
+            const newGraphData = Object.keys(stockData).map((stockName) => {
+                const stockPrices = stockData[stockName] || [];
+                if (stockPrices.length > 0) {
+                    const firstValue = parseFloat(stockPrices[0].price);
                     return {
-                        name: folder,
-                        data: folderPrices.map((row) => ({
+                        name: stockName,
+                        data: stockPrices.map((row) => ({
                             x: row.date.replace(/-/g, '/'),
-                            y: ((parseFloat(row.price) - firstValue) / firstValue) * 100, // Percentage change
+                            y: ((parseFloat(row.price) - firstValue) / firstValue) * 100,
                         })),
                     };
                 }
-                return { name: folder, data: [] };
+                return { name: stockName, data: [] };
             });
 
-            setFolderGraphs(newFolderGraphs);
+            setStockGraphData(newGraphData);
         } catch (error) {
-            console.error('Failed to fetch folder price data', error);
+            console.error('Failed to fetch stock price data', error);
         }
     };
 
-    const folderChartOptions = {
+    const chartOptions = {
         chart: {
             type: 'line',
-            height: 250,
+            height: 500,
         },
         stroke: {
             curve: 'smooth',
-            width: 1.5,
-            strokeColor: yellow,
+            width: 2,
         },
         xaxis: {
             type: 'datetime',
@@ -73,20 +71,30 @@ const FolderPriceGraphs = ({ folders, dataFile }) => {
                 formatter: (val) => `${val.toFixed(2)}%`,
             },
         },
+        title: {
+            text: 'Stock Price Change (%)',
+            align: 'center',
+        },
+        legend: {
+            position: 'bottom',
+            horizontalAlign: 'center',
+        },
     };
 
     return (
-        <div style={{ maxHeight: '300px', overflowY: 'auto', padding: '10px', border: '1px solid #ccc', borderRadius: '5px'}}>
-            {folderGraphs.map((folderGraph, index) => (
-                <div key={index} style={{ marginBottom: '20px' }}>
-                    <Chart
-                        options={{ ...folderChartOptions, title: { text: `Folder: ${folderGraph.name}` } }}
-                        series={[folderGraph]}
-                        type="line"
-                        height={250}
-                    />
+        <div style={{ padding: '20px', border: '1px solid #ccc', borderRadius: '5px' }}>
+            {stockGraphData.length > 0 ? (
+                <Chart
+                    options={chartOptions}
+                    series={stockGraphData}
+                    type="line"
+                    height={350}
+                />
+            ) : (
+                <div style={{ textAlign: 'center', padding: '20px' }}>
+                    <p>Select stocks to show data</p>
                 </div>
-            ))}
+            )}
         </div>
     );
 };

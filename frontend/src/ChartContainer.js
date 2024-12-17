@@ -7,25 +7,45 @@ import FolderPriceGraphs from "./FolderPriceGraphs";
 import API_BASE_URL from "./config";
 
 const ChartContainer = ({ dataFile}) => {
-    const [folders, setFolders] = useState([]);
+    const [experiment, setExperiment] = useState('');
+    const [stocks, setStocks] = useState([]);
     const [models, setModels] = useState([]);
     const [stopLosses, setStopLosses] = useState([]);
     const [series, setSeries] = useState([]);
     const location = useLocation(); // Get the current location
 
+    const handleExperimentChange = (value) => {
+        setExperiment(value);
+        setStocks([]); // Clear stocks
+        setModels([]); // Clear models
+        setStopLosses([]); // Clear stop losses
+    };
+
+    const handleStocksChange = (value) => {
+        setStocks(value);
+        setModels([]); // Clear models
+        setStopLosses([]); // Clear stop losses
+    };
+
+    const handleModelsChange = (value) => {
+        setModels(value);
+        setStopLosses([]); // Clear stop losses
+    };
+
     useEffect(() => {
-        if (folders.length === 0 || models.length === 0 || stopLosses.length === 0) {
+        if (stocks.length === 0 || models.length === 0 || stopLosses.length === 0) {
             setSeries([]);
         } else {
             fetchData();
         }
-    }, [folders, models, stopLosses, location]);
+    }, [experiment, stocks, models, stopLosses, location]);
 
 
     const fetchData = async () => {
         try {
-            const response = await axios.post(API_BASE_URL + '/combinedCsv', {
-                folders,
+            const response = await axios.post(API_BASE_URL + '/data', {
+                experiment,
+                stocks,
                 models,
                 stopLosses,
                 dataFile
@@ -100,29 +120,57 @@ const ChartContainer = ({ dataFile}) => {
                     height={600}
                 />
 
-                <FolderPriceGraphs folders={folders} dataFile={dataFile} /> <br/> <br/>
+                <FolderPriceGraphs experiment={experiment} stocks={stocks} /> <br/> <br/>
             </div> <br/> <br/>
 
             {/* Select Fields */}
-            <div style={{ display: 'flex', flex: 1, flexDirection: 'column', minWidth: '200px', gap: '40px', padding: '120px 20px' }}>
+            <div
+                style={{
+                    display: 'flex',
+                    flex: 1,
+                    flexDirection: 'column',
+                    minWidth: '200px',
+                    gap: '40px',
+                    padding: '120px 20px',
+                }}
+            >
+                {/* Experiment Select */}
+                <SelectField
+                    label="Experiment"
+                    endpoint={`${API_BASE_URL}/experiments`}
+                    value={experiment}
+                    onChange={handleExperimentChange}
+                    isMulti={false} // Single select
+                />
 
+                {/* Stocks Select */}
                 <SelectField
-                    label="Folder"
-                    endpoint={API_BASE_URL + "/mainFolders"}
-                    value={folders}
-                    onChange={setFolders}
+                    label="Stocks"
+                    endpoint={`${API_BASE_URL}/stocks`}
+                    value={stocks}
+                    onChange={handleStocksChange}
+                    isMulti={true} // Multi-select
+                    dependentData={{ experiment }} // Pass experiment as dependency
                 />
+
+                {/* Models Select */}
                 <SelectField
-                    label="Model"
-                    endpoint={API_BASE_URL + "/models"}
+                    label="Models"
+                    endpoint={`${API_BASE_URL}/models`}
                     value={models}
-                    onChange={setModels}
+                    onChange={handleModelsChange}
+                    isMulti={true} // Multi-select
+                    dependentData={{ experiment, stocks }} // Pass experiment and stocks as dependencies
                 />
+
+                {/* Stop Losses Select */}
                 <SelectField
-                    label="Stop Loss"
-                    endpoint={API_BASE_URL + "/stoploss"}
+                    label="StopLosses"
+                    endpoint={`${API_BASE_URL}/stoplosses`}
                     value={stopLosses}
                     onChange={setStopLosses}
+                    isMulti={true} // Multi-select
+                    dependentData={{ experiment, stocks, models }} // Pass experiment, stocks, and models as dependencies
                 />
             </div>
         </div>
