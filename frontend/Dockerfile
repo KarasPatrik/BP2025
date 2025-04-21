@@ -30,9 +30,13 @@ RUN npm install
 # Copy the rest of the application code
 COPY . .
 
-# Expose the default React development port
+# ---------- choose dev vs prod ----------
+# --- DEV: hot reload on port 3000 ---
+CMD ["npm","run","dev","--","--host"]
 EXPOSE 3000
 
-# Start the React app
-CMD ["npm", "start"]
+# --- PROD image (if you want) ---
+# RUN npm run build
+# CMD ["npm","run","preview","--","--host"]
+# EXPOSE 4173
 

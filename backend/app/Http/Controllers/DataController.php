@@ -297,5 +297,108 @@ class DataController extends Controller
     }
 
 
+    public function getSampledCsvData(Request $request)
+    {
+        $experimentName = $request->input('experiment');
+        $stocks = $request->input('stocks', []);
+        $models = $request->input('models', []);
+        $stopLosses = $request->input('stopLosses', []);
+        $dataFile = $request->input('dataFile', "");
+
+        if (!$experimentName) {
+            return response()->json(['error' => 'Experiment name is required'], 400);
+        }
+        if (empty($stocks)) {
+            return response()->json(['error' => 'At least one stock is required'], 400);
+        }
+        if (empty($models)) {
+            return response()->json(['error' => 'At least one model is required'], 400);
+        }
+        if (empty($stopLosses)) {
+            return response()->json(['error' => 'At least one stop loss is required'], 400);
+        }
+
+        $lineInterval = 1;
+        if ($dataFile === 'trade_progress.csv') {
+            $lineInterval = 50;
+        } elseif ($dataFile === 'balance.csv') {
+            $lineInterval = 25;
+        }
+
+        $experimentPath = $this->baseDir . '/' . $experimentName;
+        $result = [];
+
+        foreach ($stocks as $stock) {
+            $stockPath = "$experimentPath/data/$stock";
+
+            if (!File::isDirectory($stockPath)) {
+                Log::warning("Stock folder not found: $stockPath");
+                continue;
+            }
+
+            foreach ($models as $model) {
+                $modelPath = "$stockPath/$model";
+
+                if (!File::isDirectory($modelPath)) {
+                    Log::info("Model folder not found: $modelPath");
+                    continue;
+                }
+
+                foreach ($stopLosses as $stopLoss) {
+                    $stopLossFolder = "sl_$stopLoss";
+                    $stopLossPath = "$modelPath/$stopLossFolder";
+
+                    if (!File::isDirectory($stopLossPath)) {
+                        Log::info("Stop loss folder not found: $stopLossPath");
+                        continue;
+                    }
+
+                    $csvPath = "$stopLossPath/$dataFile";
+
+                    if (!File::exists($csvPath)) {
+                        Log::info("CSV file not found: $csvPath");
+                        continue;
+                    }
+
+                    $csvData = File::get($csvPath);
+                    $csvData = preg_replace('/\r\n?/', "\n", $csvData);  // Normalize line endings
+                    $csvData = preg_replace('/\xEF\xBB\xBF/', '', $csvData); // Remove BOM if present
+                    $csvData = trim($csvData);
+
+                    $rows = array_map('str_getcsv', explode("\n", $csvData));
+                    $header = array_shift($rows);
+
+                    if (!$header || !in_array('date', $header) || !in_array('gain', $header)) {
+                        Log::warning("CSV header is missing required columns: $csvPath");
+                        continue;
+                    }
+
+                    $filteredRows = [];
+                    foreach ($rows as $index => $row) {
+                        if ($index % $lineInterval === 0) {
+                            $filteredRows[] = $row;
+                        }
+                    }
+
+                    $filteredData = array_map(function ($row) use ($header) {
+                        $row = array_combine($header, $row);
+                        return [
+                            'date' => $row['date'] ?? null,
+                            'gain' => $row['gain'] ?? null,
+                        ];
+                    }, $filteredRows);
+
+                    $key = "$stock | $model | $stopLoss";
+                    $result[$key] = array_filter($filteredData, function ($row) {
+                        return $row['date'] && $row['gain'];
+                    });
+                }
+            }
+        }
+
+        return response()->json($result);
+    }
+
+
 
 }
