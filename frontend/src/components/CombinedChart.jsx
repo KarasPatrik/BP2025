@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import Chart from 'react-apexcharts';
-import ApexCharts from 'apexcharts';
 import axios from 'axios';
-import API_BASE_URL from "./config";
+import { API_BASE_URL } from '../config.js';
 
 
 const CombinedChart = ({ experiment, stocks, models, stopLosses, dataFile }) => {
     const [mainSeries, setMainSeries] = useState([]);
     const [stockDataSeries, setStockDataSeries] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [version, setVersion] = useState(0);
 
     useEffect(() => {
         if (!experiment || stocks.length === 0 || models.length === 0 || stopLosses.length === 0) {
@@ -16,8 +16,6 @@ const CombinedChart = ({ experiment, stocks, models, stopLosses, dataFile }) => 
             setStockDataSeries([]);
             return;
         }
-        ApexCharts.exec('main-chart', 'destroy');
-        ApexCharts.exec('stocks-chart', 'destroy');
 
         (async () => {
             try {
@@ -64,7 +62,7 @@ const CombinedChart = ({ experiment, stocks, models, stopLosses, dataFile }) => 
                 });
 
                 setStockDataSeries(stockGraphData);
-
+                setVersion(v => v + 1);
             } catch (err) {
                 console.error('Error fetching combined chart data:', err);
                 setMainSeries([]);
@@ -75,13 +73,20 @@ const CombinedChart = ({ experiment, stocks, models, stopLosses, dataFile }) => 
         })();
     }, [experiment, stocks, models, stopLosses, dataFile]);
 
+    const animationOpts = {
+        enabled: false,
+        // you can also tweak these, but `enabled: false` is the key
+        // dynamicAnimation: { speed: 0 },
+        // gradualAnimation: { enabled: false },
+    };
     // Example options
     const mainChartOptions = {
         chart: {
-            id: 'main-chart',
+            id: `main-chart-${version}`,
             group: 'combined',
             type: 'line',
             height: 500,
+            animations: animationOpts,
             toolbar: {
                 tools: {
                     download: true,
@@ -125,10 +130,11 @@ const CombinedChart = ({ experiment, stocks, models, stopLosses, dataFile }) => 
 
     const stocksChartOptions = {
         chart: {
-            id: 'stocks-chart',
+            id: `stocks-chart-${version}`,
             group: 'combined',
             type: 'line',
             height: 300,
+            animations: animationOpts,
             toolbar: {
                 tools: {
                     download: true,
@@ -180,19 +186,25 @@ const CombinedChart = ({ experiment, stocks, models, stopLosses, dataFile }) => 
                 <p style={{ textAlign: 'center' }}>No data to show. Please select experiment/stocks.</p>
             )}
             {!loading && mainSeries.length > 0 && (
-                <div id="wrapper">
+                <div key={version} id="wrapper">
                     <div style={{ height: '500px', border: '1px solid red' }}>
                         <Chart
+                            key={`main-${version}`}
+                            type="line"
                             options={mainChartOptions}
                             series={mainSeries}
                             height="100%"
+                            redraw={true}
                         />
                     </div>
                     <div style={{ height: '300px', border: '1px solid blue' }}>
                         <Chart
+                            key={`stocks-${version}`}
+                            type="line"
                             options={stocksChartOptions}
                             series={stockDataSeries}
                             height="100%"
+                            redraw={true}
                         />
                     </div>
                 </div>

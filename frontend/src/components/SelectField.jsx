@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import {
     FormControl,
     InputLabel,
@@ -9,6 +8,7 @@ import {
     ListItemText,
     TextField,
 } from '@mui/material';
+import {securePost} from "../lib/http.js";
 
 const SelectField = ({ label, endpoint, value, onChange, isMulti, dependentData = null }) => {
     const [options, setOptions] = useState([]);
@@ -24,7 +24,7 @@ const SelectField = ({ label, endpoint, value, onChange, isMulti, dependentData 
                     return;
                 }
 
-                const response = await axios.post(endpoint, dependentData || {});
+                const response = await securePost(endpoint, dependentData || {});
                 const data = response.data;
 
                 const items = data.map((item) => ({ value: item, label: item }));
@@ -42,7 +42,7 @@ const SelectField = ({ label, endpoint, value, onChange, isMulti, dependentData 
 
     useEffect(() => {
         const filtered = options.filter((option) =>
-            option.label.toLowerCase().includes(searchTerm.toLowerCase())
+            option.label.toString().toLowerCase().includes(searchTerm.toLowerCase())
         );
         setFilteredOptions(filtered);
     }, [searchTerm, options]);

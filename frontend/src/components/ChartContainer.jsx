@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import SelectField from './SelectField';
-import API_BASE_URL from "./config";
-import CombinedChart from "./CombinedChart";
+import SelectField from './SelectField.jsx';
+import { API_BASE_URL } from '../config.js';
+import CombinedHighchart from "./CombinedHighchart.jsx";
 
 const ChartContainer = ({ dataFile}) => {
     const [experiment, setExperiment] = useState('');
@@ -31,7 +31,7 @@ const ChartContainer = ({ dataFile}) => {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'stretch' }}>
             {/* Combined Single Chart */}
             <div style={{ flex: "3", padding: '20px' }}>
-                <CombinedChart
+                <CombinedHighchart
                     experiment={experiment}
                     stocks={stocks}
                     models={models}
@@ -53,7 +53,7 @@ const ChartContainer = ({ dataFile}) => {
             >
                 <SelectField
                     label="Experiment"
-                    endpoint={`${API_BASE_URL}/experiments`}
+                    endpoint={`${API_BASE_URL}/clickExperiments`}
                     value={experiment}
                     onChange={handleExperimentChange}
                     isMulti={false}
@@ -61,7 +61,7 @@ const ChartContainer = ({ dataFile}) => {
 
                 <SelectField
                     label="Stocks"
-                    endpoint={`${API_BASE_URL}/stocks`}
+                    endpoint={`${API_BASE_URL}/clickStocks`}
                     value={stocks}
                     onChange={handleStocksChange}
                     isMulti={true}
@@ -70,7 +70,7 @@ const ChartContainer = ({ dataFile}) => {
 
                 <SelectField
                     label="Models"
-                    endpoint={`${API_BASE_URL}/models`}
+                    endpoint={`${API_BASE_URL}/clickModels`}
                     value={models}
                     onChange={handleModelsChange}
                     isMulti={true}
@@ -79,7 +79,7 @@ const ChartContainer = ({ dataFile}) => {
 
                 <SelectField
                     label="StopLosses"
-                    endpoint={`${API_BASE_URL}/stoplosses`}
+                    endpoint={`${API_BASE_URL}/clickStoplosses`}
                     value={stopLosses}
                     onChange={setStopLosses}
                     isMulti={true}
