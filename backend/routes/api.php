@@ -33,6 +33,12 @@ Route::post('/sampledClickStockPrices', [ClickhouseController::class, 'getSample
 
 Route::post('/realClickExperiments', [ClickhouseRealDatabaseController::class, 'getExperiments']);
 Route::post('/realClickStocks', [ClickhouseRealDatabaseController::class, 'getStocks']);
+Route::post('/realClickModels', [ClickhouseRealDatabaseController::class, 'getModels']);
+Route::post('/realClickAdviceLimits', [ClickhouseRealDatabaseController::class, 'getAdviceLimits']);
+Route::post('/realClickAdviceLimitsMax', [ClickhouseRealDatabaseController::class, 'getAdviceLimitsMax']);
+Route::post('/realClickStoplosses', [ClickhouseRealDatabaseController::class, 'getStoplosses']);
+Route::post('/realClickSimulationData', [ClickhouseRealDatabaseController::class, 'getSimulationData']);
+Route::post('/realClickStockPrices', [ClickhouseRealDatabaseController::class, 'getStockPrices']);
 
 
 

@@ -12,6 +12,7 @@ import {AuthProvider} from "./contexts/AuthContext.jsx";
 import VerifyEmailPage from "./components/VerifyEmailPage.jsx";
 import VerifyComplete from "./components/VerifyComplete.jsx";
 import VerifyPage from "./components/VerifyPage.jsx";
+import NewChartContainer from "./components/NewChartContainer.jsx";
 
 ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>
@@ -21,6 +22,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <Routes>
                 <Route path="/" element={<Home/>} />
                 <Route path="/Blnc" element={<ChartContainer dataFile="balance.csv" />} />
+                <Route path="/New" element={<NewChartContainer/>} />
                 <Route path="/Progress" element={<ChartContainer dataFile="trade_progress.csv" />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register/>} />
