@@ -4,14 +4,14 @@ import './styles/styles.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import ChartContainer from './components/ChartContainer.jsx';
 import Navbar from './components/Navbar.jsx';
-import Login from "./components/Login.jsx";
-import Register from "./components/Register.jsx";
+import Login from "./components/auth/Login.jsx";
+import Register from "./components/auth/Register.jsx";
 import Home from "./components/Home.jsx";
-import RegistrationSuccess from "./components/RegistrationSucess.jsx";
+import RegistrationSuccess from "./components/auth/RegistrationSucess.jsx";
 import {AuthProvider} from "./contexts/AuthContext.jsx";
 import VerifyEmailPage from "./components/VerifyEmailPage.jsx";
 import VerifyComplete from "./components/VerifyComplete.jsx";
-import VerifyPage from "./components/VerifyPage.jsx";
+import VerifyPage from "./components/auth/VerifyPage.jsx";
 import NewChartContainer from "./components/NewChartContainer.jsx";
 
 ReactDOM.createRoot(document.getElementById('root')).render(
