@@ -2,20 +2,19 @@
 
 namespace App\Models;
 use App\Notifications\CustomVerifyEmail;
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable implements MustVerifyEmail
+class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
-     *
+     * @property bool $is_admin
+     * @property bool $is_approved
      * @var array<int, string>
      */
     protected $fillable = [
@@ -45,10 +44,13 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_approved' => 'boolean',
+            'is_admin' => 'boolean', // ✅ new line
         ];
     }
-    public function sendEmailVerificationNotification()
+
+    public function favoriteSimulations()
     {
-        $this->notify(new CustomVerifyEmail);
+        return $this->hasMany(FavoriteSimulation::class);
     }
 }

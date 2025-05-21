@@ -1,16 +1,17 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\DataController;
+use App\Http\Controllers\Auth\AdminController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\NewPasswordController;
+use App\Http\Controllers\Auth\PasswordResetLinkController;
+use App\Http\Controllers\Auth\ProfileController;
+use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\ClickhouseController;
 use App\Http\Controllers\ClickhouseRealDatabaseController;
-use App\Http\Controllers\Auth\AuthenticatedSessionController;
-use App\Http\Controllers\Auth\RegisteredUserController;
-use App\Http\Controllers\Auth\PasswordResetLinkController;
-use App\Http\Controllers\Auth\NewPasswordController;
-use App\Http\Controllers\Auth\VerifyEmailController;
-use App\Http\Controllers\Auth\EmailVerificationNotificationController;
+use App\Http\Controllers\DataController;
+use App\Http\Controllers\FavoriteSimulationController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 
 Route::post('/experiments', [DataController::class, 'getExperiments']);
@@ -43,11 +44,25 @@ Route::post('/realClickStockPrices', [ClickhouseRealDatabaseController::class, '
 
 
 
-
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/favorites', [FavoriteSimulationController::class, 'index']);
+    Route::post('/favorites', [FavoriteSimulationController::class, 'store']);
+    Route::delete('/favorites/{favorite}', [FavoriteSimulationController::class, 'destroy']);
+});
 
 
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
+});
+
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::post('/user/change-password', [ProfileController::class, 'changePassword']);
+
+    Route::get('/admin/pending-users', [AdminController::class, 'pendingUsers']);
+    Route::get('/admin/approved-users', [AdminController::class, 'approvedUsers']);
+    Route::post('/admin/approve-user/{id}', [AdminController::class, 'approve']);
+    Route::post('/admin/change-user-password/{id}', [AdminController::class, 'changeUserPassword']);
+    Route::delete('/admin/delete-user/{id}', [AdminController::class, 'delete']);
 });
 
 
@@ -55,7 +70,6 @@ Route::prefix('auth')->group(function () {
     Route::post('/register', [RegisteredUserController::class, 'store'])
         ->middleware('guest')
         ->name('register');
-    ;
     Route::post('/login', [AuthenticatedSessionController::class, 'store'])
         ->middleware('guest')
         ->name('login');
@@ -64,16 +78,9 @@ Route::prefix('auth')->group(function () {
     Route::post('/reset-password', [NewPasswordController::class, 'store'])
         ->middleware('guest');
 
-    Route::get('/verify-email/{id}/{hash}', VerifyEmailController::class)
-        ->middleware(['auth:sanctum', 'signed', 'throttle:6,1'])
-        ->name('verification.verify');
-
-    Route::post('/email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
-        ->middleware(['auth:sanctum', 'throttle:6,1'])
-        ->name('verification.send');;
-
-
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
         ->middleware('auth:sanctum')
         ->name('logout');
+
+
 });

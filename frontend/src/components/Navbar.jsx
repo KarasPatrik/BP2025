@@ -24,22 +24,10 @@ const Navbar = () => {
 
                 {loading ? null : user ? (
                     <>
-                        {/* Unverified users only see “Verify Email” */}
-                        {!user.email_verified_at ? (
-                            <Button color="inherit" onClick={() => navigate('/verify-email')}>
-                                Verify Email
-                            </Button>
-                        ) : (
-                            /* Verified users see profile + data pages */
+                        {(
                             <>
                                 <Button color="inherit" onClick={() => navigate('/profile')}>
-                                    {user.name}
-                                </Button>
-                                <Button color="inherit" onClick={() => navigate('/Blnc')}>
-                                    Balance.csv
-                                </Button>
-                                <Button color="inherit" onClick={() => navigate('/Progress')}>
-                                    Trade_progress.csv
+                                    Profile
                                 </Button>
                             </>
                         )}

@@ -2,16 +2,17 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, Paper, Typography, Button, Box } from '@mui/material';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import http from "../../lib/http.js";
 
 export default function RegistrationSuccess() {
     const navigate = useNavigate();
     const handleCheckVerification = async () => {
         try {
             const { data } = await http.get('/api/user'); // get latest user data
-            if (data.email_verified_at) {
-                navigate('/'); // ✅ verified → home
+            if (data.is_approved) {
+                navigate('/main-menu'); // ✅ verified → home
             } else {
-                navigate('/verify-email'); // ❌ not verified → prompt
+                navigate('/pending-approval'); // ❌ not verified → prompt
             }
         } catch (err) {
             console.error('Error checking verification status:', err);

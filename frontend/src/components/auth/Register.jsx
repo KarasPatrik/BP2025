@@ -10,8 +10,8 @@ import {
     Link,
     Box,
 } from '@mui/material';
-import http, {securePost} from '../lib/http';
-import {useAuth} from "../contexts/AuthContext.jsx";
+import http, {securePost} from '../../lib/http.js';
+import {useAuth} from "../../contexts/AuthContext.jsx";
 
 export default function Register() {
     const navigate = useNavigate();

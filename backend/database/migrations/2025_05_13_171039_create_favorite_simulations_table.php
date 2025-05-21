@@ -13,8 +13,20 @@ return new class extends Migration
     {
         Schema::create('favorite_simulations', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+
+            $table->string('name'); // Optional name/label for the favorite
+
+            $table->string('experiment');
+            $table->json('stocks');
+            $table->json('models');
+            $table->json('advice_limits');
+            $table->json('advice_limits_max');
+            $table->json('stoplosses');
+
             $table->timestamps();
         });
+
     }
 
     /**

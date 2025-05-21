@@ -414,31 +414,41 @@ class ClickhouseRealDatabaseController extends  Controller
     {
         $stocks = $request->input('stocks', []);
 
+        $dateFilter = "";
+        if ($request->has('startDate') && $request->has('endDate')) {
+            $start = addslashes($request->input('startDate'));
+            $end   = addslashes($request->input('endDate'));
+            $dateFilter = "AND date >= '$start' AND date <= '$end'";
+        }
+
         if (empty($stocks)) {
             return response()->json(['error' => 'At least one stock is required'], 400);
         }
 
-        $interval = (int) ceil(count($stocks));
+        $interval = (int) ceil(count($stocks)/10);
         $interval = max($interval, 1); // Safety check
 
         $stockList = implode("','", array_map('addslashes', $stocks));
 
         try {
             $query = "
-                SELECT *
-             FROM (
-                SELECT
-                    stock,
-                    date,
-                    close,
-                    row_number() OVER (PARTITION BY stock ORDER BY date ASC) AS rn
-                FROM ohlcv
-                WHERE stock IN ('$stockList')
-            )
-            WHERE (rn - 1) % $interval = 0
-            ORDER BY stock ASC, date ASC
-            FORMAT JSON
-            ";
+                    SELECT *
+                    FROM (
+                        SELECT
+                            stock,
+                            date,
+                            close,
+                            row_number() OVER (PARTITION BY stock ORDER BY date ASC) AS rn,
+                            count() OVER (PARTITION BY stock) AS total_rows
+                        FROM ohlcv
+                        WHERE stock IN ('$stockList')
+                        $dateFilter
+                    )
+                    WHERE (rn - 1) % $interval = 0
+                       OR rn = total_rows
+                    ORDER BY stock ASC, date ASC
+                    FORMAT JSON
+                    ";
 
             $encodedQuery = urlencode($query);
 

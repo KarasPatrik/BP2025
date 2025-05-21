@@ -10,8 +10,8 @@ import {
     Alert,
     Link,
 } from '@mui/material';
-import http, {securePost} from '../lib/http';
-import {useAuth} from '../contexts/AuthContext';
+import http, {securePost} from '../../lib/http.js';
+import {useAuth} from '../../contexts/AuthContext.jsx';
 // http is your axios instance with baseURL=/api and withCredentials:true
 // ensureCsrf() calls GET /sanctum/csrf-cookie for you
 

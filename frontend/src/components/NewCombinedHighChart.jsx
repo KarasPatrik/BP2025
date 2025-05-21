@@ -36,7 +36,22 @@ export default function NewCombinedHighchart({
                     data: rows.map(r => [ new Date(r.date).getTime(), parseFloat(r.gain)*100 ])
                 })));
 
-                const { data: sd } = await axios.post(`${API_BASE_URL}/realClickStockPrices`, { stocks });
+                const allDates = Object.values(md)
+                    .flat()
+                    .map(r => new Date(r.date).getTime())
+                    .filter(Boolean);
+
+                const minDate = new Date(Math.min(...allDates));
+                const maxDate = new Date(Math.max(...allDates));
+                console.log("minDate: " + minDate)
+                console.log("maxDate: " + maxDate)
+
+                const startDate = minDate.toISOString().slice(0, 19).replace('T', ' ');
+                const endDate = maxDate.toISOString().slice(0, 19).replace('T', ' ');
+                console.log("startDate: " + startDate)
+                console.log("endDate: " + endDate)
+
+                const { data: sd } = await axios.post(`${API_BASE_URL}/realClickStockPrices`, { stocks, startDate, endDate });
                 setStockSeries(Object.entries(sd).map(([name, rows]) => {
                     if (!rows.length) return { name, data: [] };
                     const base = parseFloat(rows[0].price);

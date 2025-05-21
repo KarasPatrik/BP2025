@@ -18,8 +18,10 @@ export default function Home() {
 
     // Redirect if logged in but not verified
     useEffect(() => {
-        if (!loading && user && !user.email_verified_at) {
-            navigate('/verify-email');
+        if (!loading && user && !user.is_approved) {
+            navigate('/pending-approval');
+        } else if (user && user.is_approved){
+            navigate('/main-menu');
         }
     }, [loading, user, navigate]);
 
@@ -49,7 +51,7 @@ export default function Home() {
                 />
 
                 <Typography variant="h4" component="h1" gutterBottom>
-                    Welcome to xxxxxxx
+                    Welcome to Trading Simulations
                 </Typography>
 
                 <Typography
@@ -57,12 +59,8 @@ export default function Home() {
                     color="text.secondary"
                     sx={{ mb: 4 }}
                 >
-                    Some text. Some text. Some text. Some text. Some text.
-                    Some text. Some text. Some text. Some text. Some text. Some text.
+                    Log in or register to see data from trading simulations done on FEI STU by .......
                 </Typography>
-
-                {/* Conditional Buttons */}
-                {!user ? (
                     <Stack direction="row" spacing={2} justifyContent="center">
                         <Button
                             variant="contained"
@@ -79,24 +77,6 @@ export default function Home() {
                             Login
                         </Button>
                     </Stack>
-                ) : (
-                    <Stack direction="column" spacing={2} alignItems="center">
-                        <Button
-                            variant="contained"
-                            fullWidth
-                            onClick={() => navigate('/Blnc')}
-                        >
-                            Go to Balance.csv
-                        </Button>
-                        <Button
-                            variant="outlined"
-                            fullWidth
-                            onClick={() => navigate('/Progress')}
-                        >
-                            Go to Progress.csv
-                        </Button>
-                    </Stack>
-                )}
             </Paper>
         </Container>
     );
