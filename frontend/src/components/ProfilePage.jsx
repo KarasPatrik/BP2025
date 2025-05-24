@@ -120,69 +120,73 @@ export default function ProfilePage() {
 
     return (
         <Container maxWidth="false" sx={{ mt: 4 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                <Grid container spacing={14}>
+            <Box sx={{ display:'flex', justifyContent: 'center' }}>
+                <Grid container spacing={14} justifyContent="center">
 
                     {/* LEFT: Profile (≈ 35%) */}
                     <Grid item xs={12} md={4}>
-                        <Typography variant="h4" gutterBottom>Profile</Typography>
-                        <Paper
-                            sx={{
-                                p: 4,
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: 3,
-                                backgroundColor: '#fafafa',
-                            }}
-                        >
-                            <Typography variant="h6" gutterBottom>Profile Information</Typography>
+                        <Box sx={{ display: 'flex', justifyContent: { xs: 'center', md: 'flex-start' } }}>
+                            <Box sx={{ width: '100%', maxWidth: 500 }}>
+                                <Typography variant="h4" gutterBottom align="center">Profile</Typography>
+                                <Paper
+                                    sx={{
+                                        p: 4,
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        gap: 3,
+                                        backgroundColor: '#fafafa',
+                                    }}
+                                >
+                                    <Typography variant="h6" gutterBottom>Profile Information</Typography>
 
-                            <Typography><strong>Name:</strong> {user?.name}</Typography>
-                            <Typography><strong>Surname:</strong> {user?.surname}</Typography>
-                            <Typography><strong>Email:</strong> {user?.email}</Typography>
+                                    <Typography><strong>Name:</strong> {user?.name}</Typography>
+                                    <Typography><strong>Surname:</strong> {user?.surname}</Typography>
+                                    <Typography><strong>Email:</strong> {user?.email}</Typography>
 
-                            <Divider sx={{ my: 2 }} />
-                            <Typography variant="h6">Change Your Password</Typography>
+                                    <Divider sx={{ my: 2 }} />
+                                    <Typography variant="h6">Change Your Password</Typography>
 
-                            <TextField
-                                label="Current Password"
-                                type="password"
-                                fullWidth
-                                value={passwords.current}
-                                onChange={(e) => setPasswords({ ...passwords, current: e.target.value })}
-                            />
-                            <TextField
-                                label="New Password"
-                                type="password"
-                                fullWidth
-                                value={passwords.new}
-                                onChange={(e) => setPasswords({ ...passwords, new: e.target.value })}
-                            />
-                            <TextField
-                                label="Confirm New Password"
-                                type="password"
-                                fullWidth
-                                value={passwords.confirm}
-                                onChange={(e) => setPasswords({ ...passwords, confirm: e.target.value })}
-                            />
+                                    <TextField
+                                        label="Current Password"
+                                        type="password"
+                                        fullWidth
+                                        value={passwords.current}
+                                        onChange={(e) => setPasswords({ ...passwords, current: e.target.value })}
+                                    />
+                                    <TextField
+                                        label="New Password"
+                                        type="password"
+                                        fullWidth
+                                        value={passwords.new}
+                                        onChange={(e) => setPasswords({ ...passwords, new: e.target.value })}
+                                    />
+                                    <TextField
+                                        label="Confirm New Password"
+                                        type="password"
+                                        fullWidth
+                                        value={passwords.confirm}
+                                        onChange={(e) => setPasswords({ ...passwords, confirm: e.target.value })}
+                                    />
 
-                            <Button
-                                variant="contained"
-                                onClick={handlePasswordChange}
-                                sx={{ mt: 2 }}
-                            >
-                                Update Password
-                            </Button>
+                                    <Button
+                                        variant="contained"
+                                        onClick={handlePasswordChange}
+                                        sx={{ mt: 2 }}
+                                    >
+                                        Update Password
+                                    </Button>
 
-                            {msg && <Typography sx={{ color: 'green' }}>{msg}</Typography>}
-                            {error && <Typography sx={{ color: 'red', whiteSpace: 'pre-line' }}>{error}</Typography>}
-                        </Paper>
+                                    {msg && <Typography sx={{ color: 'green' }}>{msg}</Typography>}
+                                    {error && <Typography sx={{ color: 'red', whiteSpace: 'pre-line' }}>{error}</Typography>}
+                                </Paper>
+                            </Box>
+                        </Box>
                     </Grid>
 
                     {/* RIGHT: Admin Panel (≈ 60%) */}
                     {user?.is_admin && (
                         <Grid item xs={12} md={7}>
-                            <Typography variant="h4" gutterBottom>Admin Controls</Typography>
+                            <Typography variant="h4" gutterBottom align="center">Admin Controls</Typography>
                                 {/* Pending Users */}
                                 <Paper sx={{ p: 2, mb: 4, backgroundColor: '#f5f5f5' }}>
                                     <Typography variant="h6" gutterBottom>Pending Users</Typography>

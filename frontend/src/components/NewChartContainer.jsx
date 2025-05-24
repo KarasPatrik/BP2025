@@ -1,9 +1,9 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import SelectField from "./SelectField.jsx";
-import {API_BASE_URL} from "../config.js";
+import {API_BASE_URL, CHART_LINES_LIMIT} from "../config.js";
 import NewCombinedHighchart from "./NewCombinedHighChart.jsx";
 import axios from "axios";
-import { TextField, Button } from '@mui/material';
+import {TextField, Button, Box} from '@mui/material';
 import { useLocation } from 'react-router-dom';
 
 
@@ -15,11 +15,43 @@ const NewChartContainer = () => {
     const [adviceLimits, setAdviceLimits] = useState([]);
     const [adviceLimitsMax, setAdviceLimitsMax] = useState([]);
     const [stoplosses, setStoplosses] = useState([]);
+
     const [favoriteName, setFavoriteName] = useState('');
     const [error, setError] = useState('');
     const [existingFavorites, setExistingFavorites] = useState([]);
     const [success, setSuccess] = useState('');
     const location = useLocation();
+
+    const stocksDependentData = useMemo(() => ({ experiment }), [experiment]);
+    const modelsDependentData = useMemo(() => ({ experiment, stocks }), [experiment, stocks]);
+    const limitsDependentData = useMemo(() => ({ experiment, stocks, models }), [experiment, stocks, models]);
+    const limitsMaxDependentData = useMemo(() => ({ experiment, stocks, models, adviceLimits }), [experiment, stocks, models, adviceLimits]);
+    const stoplossesDependentData = useMemo(() => ({ experiment, stocks, models, adviceLimits, adviceLimitsMax }), [experiment, stocks, models, adviceLimits, adviceLimitsMax]);
+
+    const getLength = (arr) => Math.max(arr.length, 1);
+    const COMBO_LIMIT = CHART_LINES_LIMIT;
+    const comboCount = experiment && stocks.length ?
+        getLength(stocks) *
+        getLength(models) *
+        getLength(adviceLimits) *
+        getLength(adviceLimitsMax) *
+        getLength(stoplosses)
+        : 0;
+    const isOverLimit = comboCount > COMBO_LIMIT;
+
+    const comboPotential = {
+        models: getLength(stocks),
+        adviceLimits: getLength(stocks) * getLength(models),
+        adviceLimitsMax: getLength(stocks) * getLength(models) * getLength(adviceLimits),
+        stoplosses: getLength(stocks) * getLength(models) * getLength(adviceLimits) * getLength(adviceLimitsMax),
+    };
+    const block = {
+        models: comboPotential.models >= COMBO_LIMIT,
+        adviceLimits: comboPotential.adviceLimits >= COMBO_LIMIT,
+        adviceLimitsMax: comboPotential.adviceLimitsMax >= COMBO_LIMIT,
+        stoplosses: comboPotential.stoplosses >= COMBO_LIMIT,
+    };
+    const firstBlocked = Object.entries(block).find(([key, value]) => value)?.[0];
 
     useEffect(() => {
         if (location.state?.favorite) {
@@ -142,9 +174,16 @@ const NewChartContainer = () => {
     };
 
     return (
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'stretch' }}>
+        <Box
+            sx={{
+                display: 'flex',
+                flexDirection: { xs: 'column', md: 'row' },
+                justifyContent: 'space-between',
+                alignItems: 'stretch',
+            }}
+        >
             {/* Combined Single Chart */}
-            <div style={{ flex: "3", padding: '20px' }}>
+            <Box sx={{ flex: 3, p: 2 }}>
                 <NewCombinedHighchart
                     experiment={experiment}
                     stocks={stocks}
@@ -153,17 +192,18 @@ const NewChartContainer = () => {
                     adviceLimitsMax={adviceLimitsMax}
                     stoplosses={stoplosses}
                 />
-            </div>
+            </Box>
 
             {/* Sidebar with selects */}
-            <div
-                style={{
-                    display: 'flex',
+            <Box
+                sx={{
                     flex: 1,
+                    display: 'flex',
                     flexDirection: 'column',
-                    minWidth: '200px',
-                    gap: '30px',
-                    padding: '60px 20px',
+                    minWidth: '240px',
+                    gap: 3,
+                    p: 3,
+                    pt: 10,
                 }}
             >
                 <SelectField
@@ -180,7 +220,7 @@ const NewChartContainer = () => {
                     value={stocks}
                     onChange={handleStocksChange}
                     isMulti={true}
-                    dependentData={{ experiment }}
+                    dependentData={stocksDependentData}
                 />
 
                 <SelectField
@@ -189,7 +229,9 @@ const NewChartContainer = () => {
                     value={models}
                     onChange={handleModelsChange}
                     isMulti={true}
-                    dependentData={{ experiment, stocks }}
+                    dependentData={modelsDependentData}
+                    comboLimitExceeded={block.models}
+                    showComboWarning={firstBlocked === "models"}
                 />
 
                 <SelectField
@@ -198,7 +240,9 @@ const NewChartContainer = () => {
                     value={adviceLimits}
                     onChange={handleLimitsChange}
                     isMulti={true}
-                    dependentData={{ experiment, stocks, models }}
+                    dependentData={limitsDependentData}
+                    comboLimitExceeded={block.adviceLimits}
+                    showComboWarning={firstBlocked === "adviceLimits"}
                 />
 
                 <SelectField
@@ -207,7 +251,9 @@ const NewChartContainer = () => {
                     value={adviceLimitsMax}
                     onChange={handleLimitsMaxChange}
                     isMulti={true}
-                    dependentData={{ experiment, stocks, models, adviceLimits }}
+                    dependentData={limitsMaxDependentData}
+                    comboLimitExceeded={block.adviceLimitsMax}
+                    showComboWarning={firstBlocked === "adviceLimitsMax"}
                 />
 
                 <SelectField
@@ -216,7 +262,9 @@ const NewChartContainer = () => {
                     value={stoplosses}
                     onChange={setStoplosses}
                     isMulti={true}
-                    dependentData={{ experiment, stocks, models, adviceLimits, adviceLimitsMax }}
+                    dependentData={stoplossesDependentData}
+                    comboLimitExceeded={block.stoplosses}
+                    showComboWarning={firstBlocked === "stoplosses"}
                 />
 
                 <TextField
@@ -239,21 +287,24 @@ const NewChartContainer = () => {
                     Save Favorite
                 </Button>
 
+                {comboCount && (
+                    <Box sx={{ mt: 1, fontSize: '0.9rem', color: isOverLimit ? 'red' : 'text.secondary' }}>
+                        {isOverLimit ? (
+                            <>⚠️ {comboCount.toLocaleString()} combinations selected (limit: {COMBO_LIMIT})</>
+                        ) : (
+                            <>{comboCount.toLocaleString()} combinations selected</>
+                        )}
+                    </Box>
+                )}
+
                 {error && (
-                    <p style={{ color: 'red', marginTop: '8px', fontSize: '0.9rem' }}>
-                        {error}
-                    </p>
+                    <Box sx={{ color: 'red', fontSize: '0.9rem' }}>{error}</Box>
                 )}
-
                 {success && (
-                    <p style={{ color: 'green', marginTop: '8px', fontSize: '0.9rem' }}>
-                        {success}
-                    </p>
+                    <Box sx={{ color: 'green', fontSize: '0.9rem' }}>{success}</Box>
                 )}
-
-
-            </div>
-        </div>
+            </Box>
+        </Box>
     );
 };
 

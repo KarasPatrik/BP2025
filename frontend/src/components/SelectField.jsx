@@ -6,11 +6,11 @@ import {
     MenuItem,
     Checkbox,
     ListItemText,
-    TextField,
+    TextField, Typography,
 } from '@mui/material';
 import {securePost} from "../lib/http.js";
 
-const SelectField = ({ label, endpoint, value, onChange, isMulti, dependentData = null }) => {
+const SelectField = ({ label, endpoint, value, onChange, isMulti, dependentData = null, comboLimitExceeded = false, showComboWarning = false }) => {
     const [options, setOptions] = useState([]);
     const [filteredOptions, setFilteredOptions] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
@@ -18,7 +18,7 @@ const SelectField = ({ label, endpoint, value, onChange, isMulti, dependentData 
     useEffect(() => {
         const fetchOptions = async () => {
             try {
-                if (dependentData && Object.values(dependentData).some((v) => !v || v.length === 0)) {
+                if (comboLimitExceeded || (dependentData && Object.values(dependentData).some((v) => !v || v.length === 0))) {
                     setOptions([]);
                     setFilteredOptions([]);
                     return;
@@ -26,8 +26,8 @@ const SelectField = ({ label, endpoint, value, onChange, isMulti, dependentData 
 
                 const response = await securePost(endpoint, dependentData || {});
                 const data = response.data;
-
                 const items = data.map((item) => ({ value: item, label: item }));
+
                 setOptions(items);
                 setFilteredOptions(items);
             } catch (error) {
@@ -38,7 +38,7 @@ const SelectField = ({ label, endpoint, value, onChange, isMulti, dependentData 
         if (endpoint) {
             fetchOptions();
         }
-    }, [endpoint, dependentData, label]);
+    }, [endpoint, dependentData, label, comboLimitExceeded]);
 
     useEffect(() => {
         const filtered = options.filter((option) =>
@@ -77,6 +77,7 @@ const SelectField = ({ label, endpoint, value, onChange, isMulti, dependentData 
                 multiple={isMulti}
                 value={value}
                 onChange={handleChange}
+                disabled={comboLimitExceeded}
                 renderValue={(selected) =>
                     isMulti
                         ? selected.length === options.length
@@ -130,6 +131,11 @@ const SelectField = ({ label, endpoint, value, onChange, isMulti, dependentData 
                     </MenuItem>
                 ))}
             </Select>
+            {comboLimitExceeded && showComboWarning && (
+                <Typography sx={{ color: 'red', fontSize: '0.8rem', mt: 1 }}>
+                    Too many combinations selected. Reduce options above to enable this field.
+                </Typography>
+            )}
         </FormControl>
     );
 };

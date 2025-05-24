@@ -4,7 +4,7 @@ import axios from "axios";
 import HighchartsReact from "highcharts-react-official";
 import Highcharts from "highcharts";
 
-export default function NewCombinedHighchart({
+function NewCombinedHighchart({
                                               experiment, stocks, models, adviceLimits, adviceLimitsMax, stoplosses
                                           }) {
     const [mainSeries, setMainSeries]   = useState([]);
@@ -80,8 +80,6 @@ export default function NewCombinedHighchart({
         const mainPoints     = mainSeries.reduce((sum, s) => sum + s.data.length, 0);
         const stockCount     = stockSeries.length;
         const stockPoints    = stockSeries.reduce((sum, s) => sum + s.data.length, 0);
-        console.log(`Main series: ${mainCount} series, ${mainPoints} total points`);
-        console.log(`Stock series: ${stockCount} series, ${stockPoints} total points`);
     }, [mainSeries, stockSeries]);
 
 
@@ -191,14 +189,14 @@ export default function NewCombinedHighchart({
 
     return (
         <div style={{ padding:20 }}>
-            <div style={{ border:'1px solid #f00', marginBottom:20 }}>
+            <div style={{marginBottom:20 }}>
                 <HighchartsReact
                     highcharts={Highcharts}
                     options={mainOpts}
                     ref={mainChartRef}
                 />
             </div>
-            <div style={{ border:'1px solid #00f' }}>
+            <div>
                 <HighchartsReact
                     highcharts={Highcharts}
                     options={stockOpts}
@@ -208,3 +206,5 @@ export default function NewCombinedHighchart({
         </div>
     );
 }
+
+export default React.memo(NewCombinedHighchart);

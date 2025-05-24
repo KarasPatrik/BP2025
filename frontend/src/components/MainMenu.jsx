@@ -51,7 +51,7 @@ export default function MainMenu() {
 
 
     return (
-        <Container sx={{ mt: 6 }}>
+        <Container sx={{ mt: 6, maxHeight: 'calc(100vh - 100px)', overflow: 'hidden' }}>
             {/* Header Row */}
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
                 <Typography variant="h3">Trading Simulations</Typography>
@@ -60,69 +60,77 @@ export default function MainMenu() {
                 </Button>
             </Box>
 
-            {/* Favorites List */}
-            {favorites.map(fav => (
-                <Paper
-                    key={fav.id}
-                    sx={{
-                        mb: 2,
-                        p: 2,
-                        border: '1px solid #ccc',
-                        backgroundColor: '#fafafa',
-                        cursor: 'pointer'
-                    }}
-                    onClick={() => toggleExpand(fav.id)}
-                >
-                    <Box
+            <Box
+                sx={{
+                    maxHeight: '500px',  // adjust height to your preference
+                    overflowY: 'auto',
+                    pr: 1, // for scrollbar spacing
+                    mb: 4
+                }}
+            >
+                {/* Favorites List */}
+                {favorites.map(fav => (
+                    <Paper
+                        key={fav.id}
                         sx={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            gap: 2
+                            mb: 2,
+                            p: 2,
+                            border: '1px solid #ccc',
+                            backgroundColor: '#fafafa',
+                            cursor: 'pointer'
                         }}
+                        onClick={() => toggleExpand(fav.id)}
                     >
-                        <Box>
-                            <Typography variant="h6">{fav.name}</Typography>
-                            <Typography variant="body2" color="textSecondary">
-                                Created: {new Date(fav.created_at).toLocaleString()}
-                            </Typography>
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                gap: 2
+                            }}
+                        >
+                            <Box>
+                                <Typography variant="h6">{fav.name}</Typography>
+                                <Typography variant="body2" color="textSecondary">
+                                    Created: {new Date(fav.created_at).toLocaleString()}
+                                </Typography>
+                            </Box>
+                            <Box sx={{ display: 'flex', gap: 1 }}>
+                                <Button
+                                    variant="outlined"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleGoTo(fav);
+                                    }}
+                                >
+                                    Go to
+                                </Button>
+                                <Button
+                                    variant="outlined"
+                                    color="error"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        confirmDeleteFavorite(fav);
+                                    }}
+                                >
+                                    Delete
+                                </Button>
+                            </Box>
                         </Box>
-                        <Box sx={{ display: 'flex', gap: 1 }}>
-                            <Button
-                                variant="outlined"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleGoTo(fav);
-                                }}
-                            >
-                                Go to
-                            </Button>
-                            <Button
-                                variant="outlined"
-                                color="error"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    confirmDeleteFavorite(fav);
-                                }}
-                            >
-                                Delete
-                            </Button>
-                        </Box>
-                    </Box>
 
-                    <Collapse in={expandedId === fav.id}>
-                        <Box sx={{ mt: 2, pl: 2 }}>
-                            <Typography><strong>Experiment:</strong> {fav.experiment}</Typography>
-                            <Typography><strong>Stocks:</strong> {fav.stocks.join(', ')}</Typography>
-                            <Typography><strong>Models:</strong> {fav.models.join(', ')}</Typography>
-                            <Typography><strong>Advice Limits:</strong> {fav.advice_limits.join(', ')}</Typography>
-                            <Typography><strong>Advice Limits Max:</strong> {fav.advice_limits_max.join(', ')}</Typography>
-                            <Typography><strong>Stoplosses:</strong> {fav.stoplosses.join(', ')}</Typography>
-                        </Box>
-                    </Collapse>
-                </Paper>
-            ))}
-
+                        <Collapse in={expandedId === fav.id}>
+                            <Box sx={{ mt: 2, pl: 2 }}>
+                                <Typography><strong>Experiment:</strong> {fav.experiment}</Typography>
+                                <Typography><strong>Stocks:</strong> {fav.stocks.join(', ')}</Typography>
+                                <Typography><strong>Models:</strong> {fav.models.join(', ')}</Typography>
+                                <Typography><strong>Advice Limits:</strong> {fav.advice_limits.join(', ')}</Typography>
+                                <Typography><strong>Advice Limits Max:</strong> {fav.advice_limits_max.join(', ')}</Typography>
+                                <Typography><strong>Stoplosses:</strong> {fav.stoplosses.join(', ')}</Typography>
+                            </Box>
+                        </Collapse>
+                    </Paper>
+                ))}
+            </Box>
             <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
                 <DialogTitle>Delete Favorite</DialogTitle>
                 <DialogContent>

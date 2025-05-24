@@ -425,7 +425,7 @@ class ClickhouseRealDatabaseController extends  Controller
             return response()->json(['error' => 'At least one stock is required'], 400);
         }
 
-        $interval = (int) ceil(count($stocks)/10);
+        $interval = (int) ceil(count($stocks)/5);
         $interval = max($interval, 1); // Safety check
 
         $stockList = implode("','", array_map('addslashes', $stocks));

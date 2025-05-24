@@ -38,7 +38,7 @@ export default function RegistrationSuccess() {
                     Registration Complete
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 3 }}>
-                    Almost there! Please check your email to verify your account.
+                    Almost there! Please wait for administrator to verify your account.
                 </Typography>
                 <Button
                     variant="contained"

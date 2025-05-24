@@ -133,9 +133,7 @@ export default function Login() {
                 </Typography>
                 <Typography variant="body2" align="center" sx={{ mt: 2 }}>
                     Forgot password?{' '}
-                    <Link component={RouterLink} to="/pass-rst">
-                        Reset password
-                    </Link>
+                    Contact Ing. Maroš Čavojský, PhD. at maros.cavojsky@stuba.sk
                 </Typography>
             </Paper>
         </Container>
