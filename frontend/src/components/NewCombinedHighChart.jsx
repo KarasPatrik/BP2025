@@ -33,7 +33,7 @@ function NewCombinedHighchart({
                 });
                 setMainSeries(Object.entries(md).map(([name, rows]) => ({
                     name,
-                    data: rows.map(r => [ new Date(r.date).getTime(), parseFloat(r.gain)*100 ])
+                    data: rows.map(r => [ new Date(r.date).getTime(), (parseFloat(r.gain)-1)*100 ])
                 })));
 
                 const allDates = Object.values(md)

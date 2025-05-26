@@ -11,14 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('fav_sims', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('name');
-            $table->string('experiment');
-            $table->timestamps();
+        Schema::create('fav_sim_stock', function (Blueprint $table) {
+            $table->foreignId('fav_sim_id')->constrained()->onDelete('cascade');
+            $table->foreignId('stock_id')->constrained()->onDelete('cascade');
+            $table->primary(['fav_sim_id', 'stock_id']);
         });
-
     }
 
     /**
@@ -26,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('fav_sims');
+        Schema::dropIfExists('fav_sim_stock');
     }
 };

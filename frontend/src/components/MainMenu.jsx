@@ -62,7 +62,7 @@ export default function MainMenu() {
 
             <Box
                 sx={{
-                    maxHeight: '500px',  // adjust height to your preference
+                    maxHeight: '70vh',  // adjust height to your preference
                     overflowY: 'auto',
                     pr: 1, // for scrollbar spacing
                     mb: 4
@@ -121,11 +121,11 @@ export default function MainMenu() {
                         <Collapse in={expandedId === fav.id}>
                             <Box sx={{ mt: 2, pl: 2 }}>
                                 <Typography><strong>Experiment:</strong> {fav.experiment}</Typography>
-                                <Typography><strong>Stocks:</strong> {fav.stocks.join(', ')}</Typography>
-                                <Typography><strong>Models:</strong> {fav.models.join(', ')}</Typography>
-                                <Typography><strong>Advice Limits:</strong> {fav.advice_limits.join(', ')}</Typography>
-                                <Typography><strong>Advice Limits Max:</strong> {fav.advice_limits_max.join(', ')}</Typography>
-                                <Typography><strong>Stoplosses:</strong> {fav.stoplosses.join(', ')}</Typography>
+                                <Typography><strong>Stocks:</strong> {fav.stocks?.map(s => s.name).join(', ')}</Typography>
+                                <Typography><strong>Models:</strong> {fav.simulation_models?.map(m => m.name).join(', ')}</Typography>
+                                <Typography><strong>Advice Limits:</strong> {fav.advice_limits?.map(a => a.name).join(', ')}</Typography>
+                                <Typography><strong>Advice Limits Max:</strong> {fav.advice_limits_max?.map(a => a.name).join(', ')}</Typography>
+                                <Typography><strong>Stoplosses:</strong> {fav.stoplosses?.map(s => s.name).join(', ')}</Typography>
                             </Box>
                         </Collapse>
                     </Paper>

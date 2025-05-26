@@ -57,11 +57,12 @@ const NewChartContainer = () => {
         if (location.state?.favorite) {
             const fav = location.state.favorite;
             setExperiment(fav.experiment);
-            setStocks(fav.stocks);
-            setModels(fav.models);
-            setAdviceLimits(fav.advice_limits);
-            setAdviceLimitsMax(fav.advice_limits_max);
-            setStoplosses(fav.stoplosses);
+            setStocks(fav.stocks?.map(s => s.name.toString()) || []);
+            setModels(fav.simulation_models?.map(m => m.name.toString()) || []);
+            setAdviceLimits(fav.advice_limits?.map(a => a.name.toString()) || []);
+            setAdviceLimitsMax(fav.advice_limits_max?.map(a => a.name.toString()) || []);
+            setStoplosses(fav.stoplosses?.map(s => s.name.toString()) || []);
+            setFavoriteName(fav.name);
         }
     }, [location.state]);
 
@@ -92,7 +93,7 @@ const NewChartContainer = () => {
             (
                 fav.experiment === experiment &&
                 arraysEqual(fav.stocks, stocks) &&
-                arraysEqual(fav.models, models) &&
+                arraysEqual(fav.simulation_models, models) &&
                 arraysEqual(fav.advice_limits, adviceLimits) &&
                 arraysEqual(fav.advice_limits_max, adviceLimitsMax) &&
                 arraysEqual(fav.stoplosses, stoplosses)
@@ -100,10 +101,12 @@ const NewChartContainer = () => {
         );
     };
 
+    const extractNames = (arr) => (arr || []).map(item => typeof item === 'string' ? item : item.name);
+
     const arraysEqual = (a, b) => {
-        if (a.length !== b.length) return false;
-        const sortedA = [...a].sort();
-        const sortedB = [...b].sort();
+        const sortedA = [...extractNames(a)].sort();
+        const sortedB = [...extractNames(b)].sort();
+        if (sortedA.length !== sortedB.length) return false;
         return sortedA.every((val, i) => val === sortedB[i]);
     };
 

@@ -53,7 +53,7 @@ const ChartContainer = ({ dataFile}) => {
             >
                 <SelectField
                     label="Experiment"
-                    endpoint={`${API_BASE_URL}/clickExperiments`}
+                    endpoint={`${API_BASE_URL}/experiments`}
                     value={experiment}
                     onChange={handleExperimentChange}
                     isMulti={false}
@@ -61,7 +61,7 @@ const ChartContainer = ({ dataFile}) => {
 
                 <SelectField
                     label="Stocks"
-                    endpoint={`${API_BASE_URL}/clickStocks`}
+                    endpoint={`${API_BASE_URL}/stocks`}
                     value={stocks}
                     onChange={handleStocksChange}
                     isMulti={true}
@@ -70,7 +70,7 @@ const ChartContainer = ({ dataFile}) => {
 
                 <SelectField
                     label="Models"
-                    endpoint={`${API_BASE_URL}/clickModels`}
+                    endpoint={`${API_BASE_URL}/models`}
                     value={models}
                     onChange={handleModelsChange}
                     isMulti={true}
@@ -79,7 +79,7 @@ const ChartContainer = ({ dataFile}) => {
 
                 <SelectField
                     label="StopLosses"
-                    endpoint={`${API_BASE_URL}/clickStoplosses`}
+                    endpoint={`${API_BASE_URL}/stoplosses`}
                     value={stopLosses}
                     onChange={setStopLosses}
                     isMulti={true}

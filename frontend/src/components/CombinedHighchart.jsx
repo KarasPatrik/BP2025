@@ -28,7 +28,7 @@ export default function CombinedHighchart({
         (async () => {
             setLoading(true);
             try {
-                const { data: md } = await axios.post(`${API_BASE_URL}/sampledClickData`, {
+                const { data: md } = await axios.post(`${API_BASE_URL}/sampledData`, {
                     experiment, stocks, models, stopLosses, dataFile
                 });
                 setMainSeries(Object.entries(md).map(([name, rows]) => ({
@@ -36,7 +36,7 @@ export default function CombinedHighchart({
                     data: rows.map(r => [ new Date(r.date).getTime(), parseFloat(r.gain)*100 ])
                 })));
 
-                const { data: sd } = await axios.post(`${API_BASE_URL}/sampledClickStockPrices`, { experiment, stocks });
+                const { data: sd } = await axios.post(`${API_BASE_URL}/stockPrices`, { experiment, stocks });
                 setStockSeries(Object.entries(sd).map(([name, rows]) => {
                     if (!rows.length) return { name, data: [] };
                     const base = parseFloat(rows[0].price);

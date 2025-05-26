@@ -49,8 +49,8 @@ class User extends Authenticatable
         ];
     }
 
-    public function favoriteSimulations()
+    public function favSims()
     {
-        return $this->hasMany(FavoriteSimulation::class);
+        return $this->hasMany(FavSim::class);
     }
 }

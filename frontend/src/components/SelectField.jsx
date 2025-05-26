@@ -6,7 +6,7 @@ import {
     MenuItem,
     Checkbox,
     ListItemText,
-    TextField, Typography,
+    TextField, Typography, Box,
 } from '@mui/material';
 import {securePost} from "../lib/http.js";
 
@@ -26,7 +26,7 @@ const SelectField = ({ label, endpoint, value, onChange, isMulti, dependentData 
 
                 const response = await securePost(endpoint, dependentData || {});
                 const data = response.data;
-                const items = data.map((item) => ({ value: item, label: item }));
+                const items = data.map((item) => ({ value: item.toString(), label: item.toString() }));
 
                 setOptions(items);
                 setFilteredOptions(items);
@@ -101,18 +101,17 @@ const SelectField = ({ label, endpoint, value, onChange, isMulti, dependentData 
             >
                 {/* Search bar for multiselects */}
                 {isMulti && (
-                    <MenuItem disabled style={{ pointerEvents: 'auto' }}>
+                    <Box sx={{ px: 2, py: 1 }}>
                         <TextField
                             fullWidth
                             placeholder="Search..."
                             value={searchTerm}
                             onChange={handleSearchChange}
                             size="small"
-                            onKeyDown={(e) => {
-                                e.stopPropagation();
-                            }}
+                            onClick={(e) => e.stopPropagation()}  // <- this is important
+                            onKeyDown={(e) => e.stopPropagation()}
                         />
-                    </MenuItem>
+                    </Box>
                 )}
 
                 {/* "Select All" Option for multiselects */}

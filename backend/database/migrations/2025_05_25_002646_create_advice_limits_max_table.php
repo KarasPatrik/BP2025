@@ -11,14 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('fav_sims', function (Blueprint $table) {
+        Schema::create('advice_limits_max', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('name');
-            $table->string('experiment');
+            $table->string('name')->unique();
             $table->timestamps();
         });
-
     }
 
     /**
@@ -26,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('fav_sims');
+        Schema::dropIfExists('advice_limits_max');
     }
 };
