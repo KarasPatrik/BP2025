@@ -133,7 +133,8 @@ const NewChartContainer = () => {
             await axios.post(`${API_BASE_URL}/favorites`, payload);
             setError('');
             setFavoriteName('');
-            setExistingFavorites(prev => [...prev, payload]);
+            const { data: updatedFavorites } = await axios.get(`${API_BASE_URL}/favorites`);
+            setExistingFavorites(updatedFavorites);
             setSuccess('Favorite saved successfully!');
         } catch (err) {
             console.error('Failed to save favorite:', err);
