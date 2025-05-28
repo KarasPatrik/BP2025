@@ -20,14 +20,15 @@ Docker installed on local machine
 ### 1. Download repository from git
 Download the whole project
 
-### 2. Update path (optional)
+### 2. Update path (optional - only if neccesary)
 Update path for apicalls in frontend/src/config.js if needed (or server or when using another port)
+If you have issues iwth authorization or ports mismatch also update default.conf in nginx folder and/or vite.config.js in frontend folder
 
 ### 3. Run the containers
 Simply go to the main root project directory and run: 
 ##### "docker-compose up --build"
 
-### 4. Add data
+### 4. Add data(optional - only if you want to use with local data in csv files instead of database)
 To add the date you need to create folder named "data" in the main root project directory (default called BP2025)
 
 In this folder the path to data should be /balance/yahoo/data/(your final folders with data) - this folders mush have unique names and in each of them needs to be subfolders
