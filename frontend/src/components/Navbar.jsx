@@ -19,7 +19,7 @@ const Navbar = () => {
                     sx={{ flexGrow: 1, textDecoration: 'none', color: 'inherit' }}
                     onClick={() => navigate('/')}
                 >
-                    BP Trading
+                    Trading Simulations
                 </Typography>
 
                 {loading ? null : user ? (
