@@ -58,7 +58,7 @@ export default function Register() {
         }
         try {
             setLoading(true);
-            await securePost('/api/auth/register', form);
+            await securePost('/auth/register', form);
             await new Promise((r) => setTimeout(r, 300));
             const { data } = await http.get('/api/user');
             setUser(data); // now it works ✅

@@ -50,7 +50,7 @@ export default function Login() {
             setLoading(true);
 
             // 2) post credentials
-            await securePost('/api/auth/login', form);
+            await securePost('/auth/login', form);
             await new Promise((r) => setTimeout(r, 300));
             const { data } = await http.get('/api/user');
             setUser(data); // now it works ✅
