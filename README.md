@@ -38,3 +38,6 @@ example of how the data should look like is in folder data_example
 
 ### 5. Create static build Frontend
 After making any changes to frontend (changing url or adding some func) u need to build (go to terminal in docker container for frontend and run "npm run build")
+
+### 6. Using from another IP adress (optional - only if you dont use it from Localhost)
+If you want to connect from another devices you need to change Sanctum stateful domain in the .env file in backend folder, there you can explicitly write the whole new IP adress where the app is running or allow all

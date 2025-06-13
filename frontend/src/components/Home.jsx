@@ -67,7 +67,7 @@ export default function Home() {
                             onClick={() => navigate('/register')}
                             sx={{ px: 3 }}
                         >
-                            Get Started
+                            Create Account
                         </Button>
                         <Button
                             variant="outlined"
