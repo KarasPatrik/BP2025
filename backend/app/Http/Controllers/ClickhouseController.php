@@ -220,7 +220,6 @@ class ClickhouseController extends Controller
 
             $rows = $data['data'] ?? [];
 
-            // Group data exactly like before: by "stock | model | stoploss"
             $result = [];
 
             foreach ($rows as $row) {
@@ -257,14 +256,12 @@ class ClickhouseController extends Controller
 
         $totalCombinations = count($stocks) * count($models) * count($stopLosses);
         $interval = (int) ceil($totalCombinations / 300);
-        $interval = max($interval, 1); // Ensure it's never less than 1
+        $interval = max($interval, 1);
 
-        // Prepare values
         $stockList = "'" . implode("','", array_map('addslashes', $stocks)) . "'";
         $modelList = "'" . implode("','", array_map('addslashes', $models)) . "'";
         $stopLossList = "'" . implode("','", array_map('addslashes', $stopLosses)) . "'";
 
-        // Build query using ClickHouse row_number() over window
         $query = "
         SELECT *
         FROM (
@@ -304,7 +301,7 @@ class ClickhouseController extends Controller
                 ];
             }
 
-            ksort($result); // Sort keys alphabetically
+            ksort($result);
 
             return response()->json($result);
         } catch (\Exception $e) {
@@ -327,10 +324,8 @@ class ClickhouseController extends Controller
             return response()->json(['error' => 'At least one stock is required'], 400);
         }
 
-        // Escape stock names safely
         $stockList = "'" . implode("','", array_map('addslashes', $stocks)) . "'";
 
-        // Query with window function to sample every 25th row per stock
         $query = "
         SELECT *
         FROM (
@@ -365,7 +360,6 @@ class ClickhouseController extends Controller
                 ];
             }
 
-            // Add price_change field (relative to first price per stock)
             foreach ($result as $stock => &$points) {
                 if (empty($points)) continue;
 

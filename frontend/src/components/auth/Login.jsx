@@ -12,11 +12,9 @@ import {
 } from '@mui/material';
 import http, {securePost} from '../../lib/http.js';
 import {useAuth} from '../../contexts/AuthContext.jsx';
-// http is your axios instance with baseURL=/api and withCredentials:true
-// ensureCsrf() calls GET /sanctum/csrf-cookie for you
 
 export default function Login() {
-    const { setUser } = useAuth(); // ✅ pull setUser from context
+    const { setUser } = useAuth();
     const navigate = useNavigate();
     const [form, setForm] = useState({ email: '', password: '' });
     const [errors, setErrors] = useState({});
@@ -48,18 +46,15 @@ export default function Login() {
 
         try {
             setLoading(true);
-
-            // 2) post credentials
             await securePost('/auth/login', form);
             await new Promise((r) => setTimeout(r, 300));
             const { data } = await http.get('/api/user');
-            setUser(data); // now it works ✅
-            // 3) on success redirect
+            setUser(data);
             navigate('/');
         } catch (err) {
-            console.error('🔥 Login flow failed:', err); // <== SEE THIS
+            console.error('🔥 Login flow failed:', err);
             if (err.response?.status === 422) {
-                // Laravel validation errors
+
                 setErrors(err.response.data.errors || {});
             } else {
                 setServerError(

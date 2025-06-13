@@ -32,7 +32,6 @@ export default function ProfilePage() {
     const [approvedUsers, setApprovedUsers] = useState([]);
     const [search, setSearch] = useState('');
 
-    // Fetch pending + approved users if admin
     useEffect(() => {
         if (user?.is_admin) {
             fetchUsers();
@@ -123,7 +122,6 @@ export default function ProfilePage() {
             <Box sx={{ display:'flex', justifyContent: 'center' }}>
                 <Grid container spacing={14} justifyContent="center">
 
-                    {/* LEFT: Profile (≈ 35%) */}
                     <Grid item xs={12} md={4}>
                         <Box sx={{ display: 'flex', justifyContent: { xs: 'center', md: 'flex-start' } }}>
                             <Box sx={{ width: '100%', maxWidth: 500 }}>
@@ -183,11 +181,9 @@ export default function ProfilePage() {
                         </Box>
                     </Grid>
 
-                    {/* RIGHT: Admin Panel (≈ 60%) */}
                     {user?.is_admin && (
                         <Grid item xs={12} md={7}>
                             <Typography variant="h4" gutterBottom align="center">Admin Controls</Typography>
-                                {/* Pending Users */}
                                 <Paper sx={{ p: 2, mb: 4, backgroundColor: '#f5f5f5' }}>
                                     <Typography variant="h6" gutterBottom>Pending Users</Typography>
                                     <Box sx={{ maxHeight: 228, overflowY: 'auto' }}>
@@ -224,7 +220,6 @@ export default function ProfilePage() {
                                     ))}
                                     </Box>
                                 </Paper>
-                            {/* Approved Users */}
                             <Paper sx={{ p: 2, backgroundColor: '#f5f5f5' }}>
                                 <Typography variant="h6" gutterBottom>Approved Users</Typography>
                                 <TextField

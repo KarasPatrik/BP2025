@@ -123,7 +123,7 @@ class DataController extends Controller
                 $modelStopLosses = collect(File::directories($modelPath))->filter(function ($folder) {
                     return preg_match('/^sl_([0-9]*\.?[0-9]+)$/', basename($folder));
                 })->map(function ($folder) {
-                    return str_replace('sl_', '', basename($folder)); // Extract the number part
+                    return str_replace('sl_', '', basename($folder));
                 });
 
                 $stopLosses = $stopLosses->merge($modelStopLosses);
@@ -193,8 +193,8 @@ class DataController extends Controller
                     }
 
                     $csvData = File::get($csvPath);
-                    $csvData = preg_replace('/\r\n?/', "\n", $csvData);  // Normalize line endings
-                    $csvData = preg_replace('/\xEF\xBB\xBF/', '', $csvData); // Remove BOM if present
+                    $csvData = preg_replace('/\r\n?/', "\n", $csvData);
+                    $csvData = preg_replace('/\xEF\xBB\xBF/', '', $csvData);
                     $csvData = trim($csvData);
 
                     $rows = array_map('str_getcsv', explode("\n", $csvData));
@@ -254,8 +254,8 @@ class DataController extends Controller
             }
 
             $csvData = File::get($stockPriceFile);
-            $csvData = preg_replace('/\r\n?/', "\n", $csvData);  // Normalize line endings
-            $csvData = preg_replace('/\xEF\xBB\xBF/', '', $csvData); // Remove BOM if present
+            $csvData = preg_replace('/\r\n?/', "\n", $csvData);
+            $csvData = preg_replace('/\xEF\xBB\xBF/', '', $csvData);
             $csvData = trim($csvData);
 
             $rows = array_map('str_getcsv', explode("\n", $csvData));
@@ -361,8 +361,8 @@ class DataController extends Controller
                     }
 
                     $csvData = File::get($csvPath);
-                    $csvData = preg_replace('/\r\n?/', "\n", $csvData);  // Normalize line endings
-                    $csvData = preg_replace('/\xEF\xBB\xBF/', '', $csvData); // Remove BOM if present
+                    $csvData = preg_replace('/\r\n?/', "\n", $csvData);
+                    $csvData = preg_replace('/\xEF\xBB\xBF/', '', $csvData);
                     $csvData = trim($csvData);
 
                     $rows = array_map('str_getcsv', explode("\n", $csvData));

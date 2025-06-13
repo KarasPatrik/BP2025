@@ -14,7 +14,7 @@ export default function PendingApprovalPage() {
 
     useEffect(() => {
         if (!loading && user?.is_approved) {
-            navigate('/main-menu'); // ✅ go to main menu
+            navigate('/main-menu');
         }
     }, [user, loading, navigate]);
 

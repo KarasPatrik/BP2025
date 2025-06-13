@@ -16,7 +16,6 @@ export default function Home() {
     const navigate = useNavigate();
     const { user, loading } = useAuth();
 
-    // Redirect if logged in but not verified
     useEffect(() => {
         if (!loading && user && !user.is_approved) {
             navigate('/pending-approval');
@@ -25,7 +24,6 @@ export default function Home() {
         }
     }, [loading, user, navigate]);
 
-    // Show nothing while loading auth state
     if (loading) return null;
 
     return (

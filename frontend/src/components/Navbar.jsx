@@ -31,14 +31,11 @@ const Navbar = () => {
                                 </Button>
                             </>
                         )}
-
-                        {/* Everyone who’s logged in can log out */}
                         <Button color="inherit" onClick={logout}>
                             Logout
                         </Button>
                     </>
                 ) : (
-                    /* Guests see login & register */
                     <>
                         {/*<Button color="inherit" onClick={() => navigate('/login')}>*/}
                         {/*    Prihlásenie*/}

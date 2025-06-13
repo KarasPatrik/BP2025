@@ -8,11 +8,11 @@ export default function RegistrationSuccess() {
     const navigate = useNavigate();
     const handleCheckVerification = async () => {
         try {
-            const { data } = await http.get('/api/user'); // get latest user data
+            const { data } = await http.get('/api/user');
             if (data.is_approved) {
-                navigate('/main-menu'); // ✅ verified → home
+                navigate('/main-menu');
             } else {
-                navigate('/pending-approval'); // ❌ not verified → prompt
+                navigate('/pending-approval');
             }
         } catch (err) {
             console.error('Error checking verification status:', err);

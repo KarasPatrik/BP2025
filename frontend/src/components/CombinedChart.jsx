@@ -75,11 +75,7 @@ const CombinedChart = ({ experiment, stocks, models, stopLosses, dataFile }) => 
 
     const animationOpts = {
         enabled: false,
-        // you can also tweak these, but `enabled: false` is the key
-        // dynamicAnimation: { speed: 0 },
-        // gradualAnimation: { enabled: false },
     };
-    // Example options
     const mainChartOptions = {
         chart: {
             id: `main-chart-${version}`,
@@ -107,7 +103,6 @@ const CombinedChart = ({ experiment, stocks, models, stopLosses, dataFile }) => 
             type: 'datetime',
             title: { text: 'Date' }
         },
-        // Multiple y-axes if needed
         yaxis: {
             title: { text: 'Gain' },
             labels: {

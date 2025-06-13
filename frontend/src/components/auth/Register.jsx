@@ -15,7 +15,7 @@ import {useAuth} from "../../contexts/AuthContext.jsx";
 
 export default function Register() {
     const navigate = useNavigate();
-    const { setUser } = useAuth(); // ✅ pull setUser from context
+    const { setUser } = useAuth();
     const [form, setForm] = useState({
         name: '',
         surname: '',
@@ -61,12 +61,11 @@ export default function Register() {
             await securePost('/auth/register', form);
             await new Promise((r) => setTimeout(r, 300));
             const { data } = await http.get('/api/user');
-            setUser(data); // now it works ✅
+            setUser(data);
             navigate('/registration-success');
         } catch (err) {
             console.log('Server response:', err.response);
             if (err.response?.status === 422) {
-                // validation errors from Laravel
                 setErrors(err.response.data.errors || {});
             } else {
                 setServerError(

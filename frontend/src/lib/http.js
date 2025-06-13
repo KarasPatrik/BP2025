@@ -2,8 +2,8 @@ import axios from 'axios';
 import API_BASE_URL from "../config.js";
 
 const http = axios.create({
-    baseURL: '/', // nginx → Laravel
-    withCredentials: true,           // send cookies every time
+    baseURL: '/',
+    withCredentials: true,
 });
 
 // fetch CSRF cookie once and cache the promise
@@ -21,5 +21,5 @@ export async function securePost (url, data = {}) {
     return http.post(url, data);
 }
 
-// export raw instance for GETs (no CSRF needed)
+
 export default http;

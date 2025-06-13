@@ -21,7 +21,7 @@ export default function CombinedHighchart({
             return;
         }
         if (stocks.length * models.length * stopLosses.length > CHART_LINES_LIMIT) {
-            setMainSeries('too-many');  // Special value to indicate overload
+            setMainSeries('too-many');
             setStockSeries([]);
             return;
         }
@@ -58,7 +58,7 @@ export default function CombinedHighchart({
         })();
     }, [experiment, stocks, models, stopLosses, dataFile]);
 
-    // log counts whenever series change
+
     useEffect(() => {
         if (!Array.isArray(mainSeries)) return; // only log if it's an array
         const mainCount      = mainSeries.length;
@@ -71,7 +71,6 @@ export default function CombinedHighchart({
 
 
 
-    // sync handler (unchanged)
     function syncExtremes(e) {
         if (e.trigger === 'sync') return;
         const thisChart = this.chart;
@@ -88,11 +87,9 @@ export default function CombinedHighchart({
     }
 
 
-    // decide whether we’re “in many‐series” mode
     const many = mainSeries.length > 10;
 
 
-    // only show shared tooltip if <= 10 series
     const tooltip = many
         ? { enabled: false }
         : {
@@ -102,7 +99,6 @@ export default function CombinedHighchart({
         };
 
 
-    // plotOptions: always hide markers, and if “many” disable all interactivity
     const plotOptions = {
         series: {
             marker: { enabled: false },

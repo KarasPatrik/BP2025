@@ -108,7 +108,7 @@ const SelectField = ({ label, endpoint, value, onChange, isMulti, dependentData 
                             value={searchTerm}
                             onChange={handleSearchChange}
                             size="small"
-                            onClick={(e) => e.stopPropagation()}  // <- this is important
+                            onClick={(e) => e.stopPropagation()}
                             onKeyDown={(e) => e.stopPropagation()}
                         />
                     </Box>

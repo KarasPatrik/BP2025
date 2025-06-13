@@ -339,9 +339,8 @@ class ClickhouseRealDatabaseController extends  Controller
 
         $totalCombinations = count($stocks) * count($models) * count($adviceLimits) * count($adviceLimitsMax) * count($stoplosses);
         $interval = (int) ceil($totalCombinations / 150);
-        $interval = max($interval, 1); // Ensure it's never less than 1
+        $interval = max($interval, 1);
 
-        // Prepare stock, model list for SQL
         $stockList = implode("','", array_map('addslashes', $stocks));
         $modelList = implode("','", array_map('addslashes', $models));
         $adviceLimitList = implode("','", array_map('addslashes', $adviceLimits));
@@ -398,7 +397,7 @@ class ClickhouseRealDatabaseController extends  Controller
                 ];
             }
 
-            ksort($result); // Sort keys alphabetically
+            ksort($result);
 
             return response()->json($result);
 
@@ -426,7 +425,7 @@ class ClickhouseRealDatabaseController extends  Controller
         }
 
         $interval = (int) ceil(count($stocks)/5);
-        $interval = max($interval, 1); // Safety check
+        $interval = max($interval, 1);
 
         $stockList = implode("','", array_map('addslashes', $stocks));
 
@@ -468,12 +467,12 @@ class ClickhouseRealDatabaseController extends  Controller
             foreach ($rows as $row) {
                 $stock = $row['stock'];
                 $result[$stock][] = [
-                    'date' => substr($row['date'], 0, 19), // Trims to 'YYYY-MM-DD HH:MM:SS'
+                    'date' => substr($row['date'], 0, 19),
                     'price' => (float)$row['close'],
                 ];
             }
 
-            ksort($result); // Sort keys alphabetically
+            ksort($result);
 
             foreach ($result as $stock => &$points) {
                 if (empty($points)) continue;

@@ -62,9 +62,9 @@ export default function MainMenu() {
 
             <Box
                 sx={{
-                    maxHeight: '70vh',  // adjust height to your preference
+                    maxHeight: '70vh',
                     overflowY: 'auto',
-                    pr: 1, // for scrollbar spacing
+                    pr: 1,
                     mb: 4
                 }}
             >

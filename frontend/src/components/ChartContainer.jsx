@@ -11,20 +11,20 @@ const ChartContainer = ({ dataFile}) => {
 
     const handleExperimentChange = (value) => {
         setExperiment(value);
-        setStocks([]); // Clear stocks
-        setModels([]); // Clear models
-        setStopLosses([]); // Clear stop losses
+        setStocks([]);
+        setModels([]);
+        setStopLosses([]);
     };
 
     const handleStocksChange = (value) => {
         setStocks(value);
-        setModels([]); // Clear models
-        setStopLosses([]); // Clear stop losses
+        setModels([]);
+        setStopLosses([]);
     };
 
     const handleModelsChange = (value) => {
         setModels(value);
-        setStopLosses([]); // Clear stop losses
+        setStopLosses([]);
     };
 
     return (
